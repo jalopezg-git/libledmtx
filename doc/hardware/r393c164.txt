@@ -1,0 +1,148 @@
+hardware for r393c164 driver
+----------------------------
+
+
+                                   RCLK RRST RENA
+                +----------------+   |   |   |
+                |CLK1   7     VCC|   |   |   |
+                |CLR1   4    CLK2|---/   |   |
+                |QA1    H    CLR2|-------/   |     +----------------+
+                |QB1    C     QA2|-----------|-----|A            VCC|
+                |QC1    3     QB2|-----------|-----|B      7      Y0|---- R0
+                |QD1    9     QC2|-----------|-----|C      4      Y1|---- R1
+                |GND    3     QD2|           |  /--|G2A    H      Y2|---- R2
+                +----------------+           |  +--|G2B    C      Y3|---- R3
+                                             \--|--|G1     1      Y4|---- R4
+                                                |  |Y7     3      Y5|---- R5
+                                                +--|GND    8      Y6|---- R6
+                                                |  +----------------+
+                                                |
+                                               VSS
+
+
+                       VDD
+                        |
+                        |
+                        +--------------\
+                        |              |
+             ____       | E            |
+     R0 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R0     |
+                                       |
+                        /--------------+
+                        |              |
+             ____       | E            |
+     R1 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R1     |
+                                       |
+                        /--------------+
+                        |              |
+             ____       | E            |
+     R2 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R2     |
+                                       |
+                        /--------------+
+                        |              |
+             ____       | E            |
+     R3 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R3     |
+                                       |
+                        /--------------+
+                        |              |
+             ____       | E            |
+     R4 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R4     |
+                                       |
+                        /--------------+
+                        |              |
+             ____       | E            |
+     R5 ----|____|----(|<) BC327       |
+             680    B   | C            |
+                        \---- C_R5     |
+                                       |
+                         /------------/
+                        |
+             ____       | E
+     R6 ----|____|----(|<) BC327
+             680    B   | C
+                        \---- C_R6
+
+
+    CDAT
+     |
+     |  +--------+                 +--------+                 +--------+                 +--------+
+     +--|A  7 VCC|        /--------|A  7 VCC|        /--------|A  7 VCC|        /--------|A  7 VCC|
+     \--|B  4  QE|--C4    +--------|B  4  QE|--C12   +--------|B  4  QE|--C20   +--------|B  4  QE|--C28
+    C0--|QA H  QF|--C5    |    C8--|QA H  QF|--C13   |   C16--|QA H  QF|--C21   |   C24--|QA H  QF|--C29
+    C1--|QB C  QG|--C6    |    C9--|QB C  QG|--C14   |   C17--|QB C  QG|--C22   |   C25--|QB C  QG|--C30
+    C2--|QC 1  QH|--------+   C10--|QC 1  QH|--------+   C18--|QC 1  QH|--------+   C26--|QC 1  QH|--C31
+    C3--|QD 6 CLR|        |   C11--|QD 6 CLR|        |   C19--|QD 6 CLR|        |   C27--|QD 6 CLR|
+        |GND4 CLK|--\      \       |GND4 CLK|--\      \       |GND4 CLK|--\      \       |GND4 CLK|--\
+        +--------+  |      C7      +--------+  |      C15     +--------+  |      C23     +--------+  |
+                    |                          |                          |                          |
+    CCLK -----------+--------------------------+--------------------------+-------------------------/
+
+
+  Cols resistor is mandatory to limit the LEDS current.
+                ____
+    Cx --------|____|-------- C_Cx
+                 82
+
+  RCLK, RRST, RENA, CCLK and CDAT should be connected to a microcontroller I/O port.  C_Rx
+  should be connected to display rows. C_Cx to display cols.  r393c164 hardware has been
+  designed for a Column Cathode matrix.  The LED matrix can be built using 5x7 parts as
+  the Kingbright TC12-11SRWA or you can buy discrete LEDS.
+
+  5x7 LED matrix of Kingbright TC12-11SRWA:
+
+               C1        C2      C3       C4       C5
+             (PIN 13)  (PIN 3) (PIN 4,11) (PIN 10) (PIN 6)
+                |        |        |        |        |
+         /-|>|--+ /-|>|--+ /-|>|--+ /-|>|--+ /-|>|--+
+(PIN 9)  |      | |      | |      | |      | |      |
+    R1 --+------|-+------|-+------|-+------|-+------|--
+(PIN 14)        |        |        |        |        |
+    R2 ---------|--------|--------|--------|--------|--
+(PIN 8)         |        |        |        |        |
+    R3 ---------|--------|--------|--------|--------|--
+(PIN 12,5)      |        |        |        |        |
+    R4 ---------|--------|--------|--------|--------|--
+(PIN 1)         |        |        |        |        |
+    R5 ---------|--------|--------|--------|--------|--
+(PIN 7)         |        |        |        |        |
+    R6 ---------|--------|--------|--------|--------|--
+(PIN 2)         |        |        |        |        |
+    R7 ---------|--------|--------|--------|--------|--
+
+  Refer to the Kingbright TC12-11SRWA datasheet.
+
+  More 74HC164 could be cascaded but you may have to replace BC327 if emitter-collector
+  current is greater than that on the datasheet.  Alternatively you can group cols so that
+  a BC327 switches a group.
+
+  r393c164 hardware height = framebuffer height.
+
+  Adding more 74HC138 encoders to switch more rows is also possible, but note the display
+  may appear to be dimmed if row count is high.  New hardware will be designed to work
+  around this.
+
+  r393c164 driver requires ledmtx_r393c164.inc file on the project directory.  This
+  file should look like this:
+
+  list
+  ; ledmtx_r393c164.inc - r393c164 driver configuration
+  nolist
+
+  LEDMTX_R393C164_IOPORT	equ	PORTA
+  LEDMTX_R393C164_RCLK		equ	RA0
+  LEDMTX_R393C164_RRST		equ	RA1
+  LEDMTX_R393C164_RENA		equ	RA2
+  LEDMTX_R393C164_CCLK		equ	RA3
+  LEDMTX_R393C164_CDAT		equ	RA4
+
+  You should tune the values to your hardware.

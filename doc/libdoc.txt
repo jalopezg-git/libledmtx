@@ -1,0 +1,131 @@
+This is a list (ignoring leading '_') list of libledmtx library.  Sources are in
+~libledmtx/src/*.S and ~libledmtx/include/*.h.  Except where denoted with MACRO
+these are implemented as functions.
+
+LEDMTX_BEGIN_MODULES_INIT - #include <ledmtx_core.h>
+  LEDMTX_BEGIN_MODULES_INIT; MACRO
+  Begin module initialisation call list.
+
+LEDMTX_MODULE_INIT - #include <ledmtx_core.h>
+  LEDMTX_MODULE_INIT(module); MACRO
+  Call module init routine.  _ledmtx_module_init will be called from ledmtx_init.
+
+LEDMTX_END_MODULE_INIT - #include <ledmtx_core.h>
+  LEDMTX_END_MODULE_INIT; MACRO
+  End module initialisation call list.
+
+LEDMTX_FRAMEBUFFER_RES - #include <ledmtx_core.h>
+  LEDMTX_FRAMEBUFFER_RES(size); MACRO
+  Declare framebuffer of size bytes.
+
+LEDMTX_BEGIN_ISR - #include <ledmtx_core.h>
+  LEDMTX_BEGIN_ISR; MACRO
+  Begin interrupt service routine if using TMR0 interrupt to call
+  _ledmtx_driver_vertrefresh.
+
+LEDMTX_END_ISR - #include <ledmtx_core.h>
+  LEDMTX_END_ISR; MACRO
+  End interrupt service routine if using TMR0 interrupt to call
+  _ledmtx_driver_vertrefresh.
+
+LEDMTX_VERTREFRESH - #include <ledmtx_core.h>
+  LEDMTX_VERTREFRESH; MACRO
+  Call _ledmtx_driver_vertrefresh.
+
+LEDMTX_BEGIN_R0 - #include <ledmtx_core.h>
+  LEDMTX_BEGIN_R0; MACRO
+  Begin a section of code executed if _ledmtx_driver_row==0.
+
+LEDMTX_END_R0 - #include <ledmtx_core.h>
+  LEDMTX_END_R0; MACRO
+  End a R0 section.
+
+ledmtx_init - #include <ledmtx_core.h>
+  void ledmtx_init (unsigned char arg, unsigned char width, unsigned char height,
+                    unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con);
+  Initialise libledmtx.  arg may be one or more (ORed) of:
+  LEDMTX_INIT_CLEAR	clear framebuffer
+  LEDMTX_INIT_TMR0	config TMR0
+
+  tmr0h, tmr0l and t0con may be computed using ledmtx_tmr0config.
+
+ledmtx_clear - #include <ledmtx_core.h>
+  void ledmtx_clear (void);
+  Clear framebuffer.
+
+ledmtx_putpixel - #include <ledmtx_core.h>
+  void ledmtx_putpixel (unsigned char x, unsigned char y, unsigned char val);
+  Set pixel if val is not 0 otherwise clear it.
+
+ledmtx_putchar - #include <ledmtx_core.h>
+  void ledmtx_putchar (unsigned char cpy, unsigned char mask,
+                       unsigned char x, unsigned char y, char c);
+  Put char c.  cpy may be one of:
+  LEDMTX_PUTCHAR_CPY	framebuffer bits = char bits
+  LEDMTX_PUTCHAR_IOR	framebuffer bits |= char bits
+
+  ledmtx_font_mask may be specified for the mask argument.
+
+ledmtx_putstr - #include <ledmtx_core.h>
+  void ledmtx_putstr (unsigned char x, unsigned char y, __data char *str);
+  Put str.
+
+ledmtx_setfont - #include <ledmtx_core.h>
+  void ledmtx_setfont (__far void (*font)(void));
+  Set font for text ops.
+
+ledmtx_scroll_l - #include <ledmtx_core.h>
+  void ledmtx_scroll_l (unsigned char x, unsigned char y,
+                        unsigned char w, unsigned char h);
+  Scroll left WxH+X+Y.  The 3 LSb of x and w are ignored.
+
+ledmtx_scroll_r - #include <ledmtx_core.h>
+  void ledmtx_scroll_r (unsigned char x, unsigned char y,
+                        unsigned char w, unsigned char h);
+  Scroll right WxH+X+Y.  The 3 LSb of x and w are ignored.
+
+ledmtx_perf_getintrtime - #include <ledmtx_perf.h>
+  unsigned int ledmtx_perf_getintrtime (void);
+  Return the cycles the last TMR0 interrupt took.  ledmtx_perf_intrtimelimit
+  specifies the maximum value.
+
+LEDMTX_SCROLLSTR_SET - #include <ledmtx_scrollstr.h>
+  LEDMTX_SCROLLSTR_SET (arg, _timeout, _x, _y, _w, _str, _step, _end); MACRO
+  Initialise scroll descriptor arg.  If using ledmtx_scrollstr_interrupt, _timeout
+  specifies the period of _step calls.  _str should point to data memory.
+  _step is normally ledmtx_scrollstr_step.  _end is normally one of:
+  ledmtx_scrollstr_reset, ledmtx_scrollstr_stop.
+
+ledmtx_scrollstr_reset - #include <ledmtx_scrollstr.h>
+  void ledmtx_scrollstr_reset (__data struct ledmtx_scrollstr_s *arg);
+  Reset descriptor arg.
+
+ledmtx_scrollstr_interrupt - #include <ledmtx_scrollstr.h>
+  void ledmtx_scrollstr_interrupt (void);
+  This routine should be called from a ISR.  It decrements counter for
+  ledmtx_scrollstr_vec entries.  If counter==0, a call to step is done and
+  counter is reset.  This is normally called in R0 section (see LEDMTX_BEGIN_R0)
+  if using ledmtx_scrollstr_start.
+
+ledmtx_scrollstr_start - #include <ledmtx_scrollstr.h>
+  unsinged char ledmtx_scrollstr_start (__data struct ledmtx_scrollstr_s *arg);
+  Place descriptor arg in ledmtx_scrollstr_vec.
+
+ledmtx_scrollstr_stop - #include <ledmtx_scrollstr.h>
+  void ledmtx_scrollstr_stop (__data struct ledmtx_scrollstr_s *arg);
+  Clear ledmtx_scrollstr_vec entry for arg.
+
+ledmtx_scrollstr_step - #include <ledmtx_scrollstr.h>
+  void ledmtx_scrollstr_step (__data struct ledmtx_scrollstr_s *arg);
+  Scroll left Wx_ledmtx_font_sz_h+X+Y and put char using mask.  This routine
+  should be called periodically.
+
+LEDMTX_HOME - #include <ledmtx_stdio.h>
+  LEDMTX_HOME(); MACRO
+  ledmtx_stdio_x=0
+  ledmtx_stdio_y=0
+
+LEDMTX_GOTO - #include <ledmtx_stdio.h>
+  LEDMTX_GOTO(x, y); MACRO
+  ledmtx_stdio_x=x
+  ledmtx_stdio_y=y

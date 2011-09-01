@@ -1,0 +1,31 @@
+CC = sdcc
+P18FXXX = 18f452
+
+LIBDIR = 
+INCLUDEDIR = 
+
+DRIVER = r393c164
+# list of libledmtx objects to link
+O = font5x7
+MODULES = 
+
+OBJECTS = $(DRIVER:%=libledmtx_%.o) $(O:%=$(LIBDIR)/libledmtx_%.o)
+LFLAGS = -mpic16 -p$(P18FXXX) -Wl-m -L$(LIBDIR) -l libledmtx_core.lib \
+  $(MODULES:%=-l libledmtx_%.lib)
+CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small -I$(INCLUDEDIR)
+
+OBJECTS += 
+
+all: target.hex
+
+clean:
+	rm -f *~ *.asm *.cod *.hex *.lst *.map *.o
+
+target.hex: $(OBJECTS)
+	$(CC) $(LFLAGS) -o $@ $^
+
+$(DRIVER:%=libledmtx_%.o): $(DRIVER:%=ledmtx_%.inc)
+	(cd $(LIBDIR)/driver && $(MAKE) D=$(DRIVER) O=$(CURDIR) driver)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) -o $@ $<
