@@ -102,4 +102,4 @@ where size=height*ceil(width/8).
 ## Contributing
 Users are welcome to contribute this project either with code, fixes
 or hardware.  If you are interested feel free to drop a mail to
-<jalopezg AT inf.uc3m.es>.
+`<jalopezg AT inf.uc3m.es>`.
