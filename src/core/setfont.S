@@ -1,7 +1,7 @@
 ;
-; setfont.S - libledmtx core: set font for text ops
+; setfont.S - libledmtx core: set font for text operations
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -31,10 +31,11 @@
   global _ledmtx_setfont
 
   code
-; extern void ledmtx_setfont(__far void (*font)(void))
+;; extern void ledmtx_setfont(__far void (*font)(void))
 _ledmtx_setfont:
+;; _ledmtx_font = font
   movlw		1
-  movff		PLUSW1, _ledmtx_font+0	; _ledmtx_font=font
+  movff		PLUSW1, _ledmtx_font+0
   movlw		2
   movff		PLUSW1, _ledmtx_font+1
   movlw		3
@@ -46,20 +47,20 @@ _ledmtx_setfont:
   movff		_ledmtx_font+1, TBLPTRH
   movff		_ledmtx_font+2, TBLPTRU
 
-  tblrd*+				; width -> _ledmtx_font_sz_w
+  tblrd*+				; _ledmtx_font_sz_w = *(TBLPTR++)
   movf		TABLAT, w, A
   movwf		_ledmtx_font_sz_w, A
 
-  ; compute mask
+;; Initialize `_leftmtx_font_mask`.  Glyphs are left-aligned; a bit is set if
+;; its state is defined by the font
   clrf		_ledmtx_font_mask, A
-
 @setfont_shift:
   bsf		STATUS, C, A
   rrcf		_ledmtx_font_mask, f, A
   decfsz	WREG, w, A
   bra		@setfont_shift
 
-  tblrd*+				; height -> _ledmtx_font_sz_h
+  tblrd*+				; _ledmtx_font_sz_h = *(TBLPTR++)
   movff		TABLAT, _ledmtx_font_sz_h
   return
 

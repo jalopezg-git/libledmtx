@@ -1,7 +1,7 @@
 /*
  * ledmtx_core.h - libledmtx core header
  *
- * Copyright (C) 2011  Javier L. Gomez
+ * Copyright (C) 2011, 2023  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -108,12 +108,12 @@ extern unsigned char ledmtx_font_sz_w;
 extern unsigned char ledmtx_font_sz_h;
 extern unsigned char ledmtx_font_mask;
 
-extern void ledmtx_init(unsigned char arg, unsigned char width, unsigned char height, unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam;
+extern void ledmtx_init(unsigned char flags, unsigned char width, unsigned char height, unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam;
 
 extern void ledmtx_clear(void);
 extern void ledmtx_putpixel(unsigned char x, unsigned char y, unsigned char val);
 
-extern void ledmtx_putchar(unsigned char cpy, unsigned char mask, unsigned char x, unsigned char y, char c) __wparam;
+extern void ledmtx_putchar(unsigned char op, unsigned char mask, unsigned char x, unsigned char y, char c) __wparam;
 extern void ledmtx_putstr(unsigned char x, unsigned char y, __data char *str);
 extern void ledmtx_setfont(__far void (*font)(void));
 

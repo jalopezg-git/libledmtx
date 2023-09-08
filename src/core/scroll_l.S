@@ -1,7 +1,7 @@
 ;
 ; scroll_l.S - libledmtx core: scroll left
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -32,31 +32,36 @@ r0x00	res	1
   global _ledmtx_scroll_l
 
   code
-; extern void ledmtx_scroll_l(unsigned char, unsigned char, unsigned char, unsigned char)
+;; extern void ledmtx_scroll_l(unsigned char x, unsigned char y, unsigned char w, unsigned char h)
 _ledmtx_scroll_l:
-  movff		r0x00, POSTDEC1		; push r0x00
+  movff		r0x00, POSTDEC1		; push registers
 
-  movlw		2			; x >> 3 -> PRODL
+;; PRODL = x >> 3
+  movlw		2
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, w, A
   andlw		0x1f
   movwf		PRODL, A
 
-  movlw		4			; w >> 3 -> r0x00
+;; r0x00 = w >> 3
+  movlw		4
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, w, A
   andlw		0x1f
   movwf		r0x00, A
-  addwf		PRODL, w, A		; r0x00+PRODL-1 -> WREG
-  decf		WREG, w, A
 
-  lfsr		0, _ledmtx_framebuffer	; _ledmtx_framebuffer
-  addwf		FSR0L, f, A		; +WREG
+;; For each row, this function performs a left shift over a series of contiguous
+;; bytes.  Compute the framebuffer address of the right-most byte that is touched
+;; in the first row
+  addwf		PRODL, w, A		; WREG = r0x00 + PRODL - 1
+  decf		WREG, w, A
+  lfsr		0, _ledmtx_framebuffer	; FSR0 = _ledmtx_framebuffer
+  addwf		FSR0L, f, A		;          + WREG
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
-  movlw		3			; +y*_ledmtx_config_stride -> FSR0
+  movlw		3			;          + (y *_ledmtx_config_stride)
   movf		PLUSW1, w, A
   mulwf		_ledmtx_config_stride, A
   movf		PRODL, w, A
@@ -64,30 +69,31 @@ _ledmtx_scroll_l:
   movf		PRODH, w, A
   addwfc	FSR0H, f, A
 
+;; `for (PRODL = h; PRODL != 0; --PRODL) {`
   movlw		5
-  movff		PLUSW1, PRODL		; h -> PRODL
-
+  movff		PLUSW1, PRODL
 @scroll_l_loop:
-  movff		r0x00, PRODH
+  movff		r0x00, PRODH		; PRODH = (w >> 3)
   bcf		STATUS, C, A
   clrf		WREG, A
 
-@scroll_l_shift:
-  rlcf		PLUSW0, f, A		; shift
-  decfsz	WREG, w, A		; decf affects Carry bit; decfsz do not 
+@scroll_l_shift:			; `for (; PRODH !=0; --PRODH) {`
+  rlcf		PLUSW0, f, A		; *(FSR0 + WREG) = *(FSR0 + WREG) << 1
+  decfsz	WREG, w, A		; `decf` affects Carry bit; `decfsz` does not
   ; nop
-  decfsz	PRODH, f, A		; loop while --PRODH!=0
-  bra		@scroll_l_shift
+  decfsz	PRODH, f, A
+  bra		@scroll_l_shift		; `}`
 
+;;; FSR0 += _ledmtx_config_stride
   movf		_ledmtx_config_stride, w, A
-  addwf		FSR0L, f, A		; FSR0+=_ledmtx_config_stride
+  addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
 
-  decfsz	PRODL, f, A		; loop while --PRODL!=0
+  decfsz	PRODL, f, A		; `}`
   bra		@scroll_l_loop
 
-  movff		PREINC1, r0x00		; pop r0x00
+  movff		PREINC1, r0x00		; pop registers
   return
 
   end

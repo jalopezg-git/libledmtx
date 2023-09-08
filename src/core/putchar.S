@@ -1,7 +1,7 @@
 ;
 ; putchar.S - libledmtx core: put character
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -37,44 +37,52 @@ r0x03	res	1
   global _ledmtx_putchar
 
   code
-; extern void ledmtx_putchar(unsigned char, unsigned char, unsigned char, unsigned char, char) __wparam
+;; extern void ledmtx_putchar(unsigned char op, unsigned char mask,
+;;                            unsigned char x, unsigned char y, char c) __wparam
 _ledmtx_putchar:
-  movff		r0x00, POSTDEC1		; push r0x00, r0x01, r0x02, r0x03
+  movff		r0x00, POSTDEC1		; push r0x0? registers
   movff		r0x01, POSTDEC1
   movff		r0x02, POSTDEC1
   movff		r0x03, POSTDEC1
 
-  movwf		r0x03, A		; cpy -> r0x03
+  movwf		r0x03, A		; r0x03 = op
 
-  movlw		5			; mask is r0x01:r0x00
+;; `mask` determines the mask to apply when copying character bits.  However,
+;; the framebuffer packs the state of 8 pixels per octet and, depending on
+;; where `x` lies, we may need to touch two bytes (i.e., part of the character
+;; is represented in byte $I$ and byte $I+1$).
+;; Thus, extend the mask to two bytes and store in r0x01:r0x00
+  movlw		5
   movff		PLUSW1, r0x01
   clrf		r0x00, A
 
-  movlw		6			; 3 LSb of x -> r0x02
+  movlw		6
   movf		PLUSW1, w, A
   andlw		0x07
-  movwf		r0x02, A
-  bz		@putchar_docpy		; shift mask?
-
+  movwf		r0x02, A		; r0x02 = (x & 0x07)
+;; Shift mask to right by `(x & 0x07)` bits, if needed
+  bz		@putchar_docpy
 @putchar_shift:
-  bcf		STATUS, C, A		; shift r0x01:r0x00
+  bcf		STATUS, C, A		; shift right r0x01:r0x00
   rrcf		r0x01, f, A
   rrcf		r0x00, f, A
   decfsz	WREG, w, A
   bra		@putchar_shift
 
 @putchar_docpy:
-  movlw		6			; x >> 3 -> WREG
+  movlw		6			; WREG = x >> 3
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, f, A
   rrncf		PLUSW1, w, A
   andlw		0x1f
 
-  lfsr		0, _ledmtx_framebuffer	; _ledmtx_framebuffer
-  addwf		FSR0L, f, A		; +WREG
+;; Compute the framebuffer address of the first byte where character data
+;; should be copied
+  lfsr		0, _ledmtx_framebuffer	; FSR0 = _ledmtx_framebuffer
+  addwf		FSR0L, f, A		;          + (x >> 3)
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
-  movlw		7			; +y*_ledmtx_config_stride -> FSR0
+  movlw		7			;          + (y * _ledmtx_config_stride)
   movf		PLUSW1, w, A
   mulwf		_ledmtx_config_stride, A
   movf		PRODL, w, A
@@ -84,11 +92,11 @@ _ledmtx_putchar:
 
   bsf		EECON1, EEPGD, A
   bcf		EECON1, CFGS, A
-
-  movff		_ledmtx_font+0, TBLPTRL	; _ledmtx_font
+;; Compute the start address (in program memory) of the character to copy
+  movff		_ledmtx_font+0, TBLPTRL	; TBLPTR = _ledmtx_font
   movff		_ledmtx_font+1, TBLPTRH
   movff		_ledmtx_font+2, TBLPTRU
-  movlw		8			; +c*_ledmtx_font_sz_h
+  movlw		8			;            + (c * _ledmtx_font_sz_h)
   movf		PLUSW1, w, A
   mulwf		_ledmtx_font_sz_h, A
   movf		PRODL, w, A
@@ -97,83 +105,83 @@ _ledmtx_putchar:
   addwfc	TBLPTRH, f, A
   btfsc		STATUS, C, A
   incf		TBLPTRU, f, A
-  tblrd*+				; +2 -> TBLPTRU:TBLPTRH:TBLPTRL
+  tblrd*+				;            + 2
   tblrd*+
 
-  movf		r0x03, w, A		; _ledmtx_putchar_cpycpy if cpy==0
-  bz		_ledmtx_putchar_cpycpy
-  ;bnz		_ledmtx_putchar_cpyior
+;; switch (op) { ... }
+  movf		r0x03, w, A
+  bz		_ledmtx_putchar_cpycpy	; case LEDMTX_PUTCHAR_CPY:
+  ;bnz		_ledmtx_putchar_cpyior	; default:
 
 _ledmtx_putchar_cpyior:
-  movff		_ledmtx_font_sz_h, r0x03
+  movff		_ledmtx_font_sz_h, r0x03	; r0x03 = _ledmtx_font_size_h
 
-@putchar_cpyior_loop:
+@putchar_cpyior_loop:			; `do {`
   tblrd*+
 
-  movf		r0x02, w, A		; r0x02 is 3 LSb of x
-  bz		@putchar_cpyior_do	; shift char bits?
-
+;; Right shift character bits by `(x & 0x07)`
+  movf		r0x02, w, A
+  bz		@putchar_cpyior_do
 @putchar_cpyior_shift:
-  bcf		STATUS, C, A		; shift TABLAT:PRODL
+  bcf		STATUS, C, A		; shift right TABLAT:PRODL
   rrcf		TABLAT, f, A
   rrcf		PRODL, f, A
   decfsz	WREG, w, A
   bra		@putchar_cpyior_shift
 
 @putchar_cpyior_do
-  movf		TABLAT, w, A		; framebufferbits|=(charbits&mask)
+;; *(FSR0++) |= (character & mask)
+  movf		TABLAT, w, A
   andwf		r0x01, w, A
   iorwf		POSTINC0, f, A		; byte 1
-
   movf		PRODL, w, A
   andwf		r0x00, w, A
   iorwf		POSTDEC0, f, A		; byte 0
-
+;; FSR0 += _ledmtx_config_stride
   movf		_ledmtx_config_stride, w, A
-  addwf		FSR0L, f, A		; FSR0+=_ledmtx_config_stride
+  addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
 
-  decfsz	r0x03, f, A		; loop while r0x03!=0
+  decfsz	r0x03, f, A		; `} while (r0x03 != 0)`
   bra		@putchar_cpyior_loop
 
-  movff		PREINC1, r0x03		; pop r0x03, r0x02, r0x01, r0x00
+  movff		PREINC1, r0x03		; pop r0x0? registers
   movff		PREINC1, r0x02
   movff		PREINC1, r0x01
   movff		PREINC1, r0x00
   return
 
 _ledmtx_putchar_cpycpy:
-  movff		_ledmtx_font_sz_h, r0x03
+  movff		_ledmtx_font_sz_h, r0x03	; r0x03 = _ledmtx_font_size_h
 
-@putchar_cpycpy_loop:
+@putchar_cpycpy_loop:			; `do {`
   tblrd*+
 
-  movf		r0x02, w, A		; r0x02 is 3 LSb of x
-  bz		@putchar_cpycpy_tsth	; shift char bits?
-
+;; Right shift character bits by `(x & 0x07)`
+  movf		r0x02, w, A
+  bz		@putchar_cpycpy_tsth
 @putchar_cpycpy_shift:
-  bcf		STATUS, C, A		; shift TABLAT:PRODL
+  bcf		STATUS, C, A		; shift right TABLAT:PRODL
   rrcf		TABLAT, f, A
   rrcf		PRODL, f, A
   decfsz	WREG, w, A
   bra		@putchar_cpycpy_shift
 
+;; Carry out `*(FSR0) &= ~mask` and `*(FSR0) |= (character & mask)` for each byte
 @putchar_cpycpy_tsth:
-  movf		r0x01, w, A		; byte 1 of mask==0?
+  movf		r0x01, w, A		; byte 1
   bz		@putchar_cpycpy_tstl
-
 @putchar_cpycpy_h:
-  xorlw		0xff			; framebufferbits&=~mask
+  xorlw		0xff
   andwf		INDF0, f, A
-  movf		TABLAT, w, A		; framebufferbits|=(charbits&mask)
+  movf		TABLAT, w, A
   andwf		r0x01, w, A
   iorwf		INDF0, f, A
 
 @putchar_cpycpy_tstl:
-  movf		r0x00, w, A		; byte 0 of mask==0?
+  movf		r0x00, w, A		; byte 0
   bz		@putchar_cpycpy_lz
-
 @putchar_cpycpy_l:
   xorlw		0xff
   andwf		PREINC0, f, A
@@ -182,15 +190,16 @@ _ledmtx_putchar_cpycpy:
   iorwf		POSTDEC0, f, A
 
 @putchar_cpycpy_lz:
+;; FSR0 += _ledmtx_config_stride
   movf		_ledmtx_config_stride, w, A
-  addwf		FSR0L, f, A		; FSR0+=_ledmtx_config_stride
+  addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
 
-  decfsz	r0x03, f, A		; loop while r0x03!=0
+  decfsz	r0x03, f, A		; `} while (r0x03 != 0)`
   bra		@putchar_cpycpy_loop
 
-  movff		PREINC1, r0x03		; pop r0x03, r0x02, r0x01, r0x00
+  movff		PREINC1, r0x03		; pop r0x0? registers
   movff		PREINC1, r0x02
   movff		PREINC1, r0x01
   movff		PREINC1, r0x00

@@ -1,7 +1,7 @@
 ;
 ; init.S - libledmtx core initialisation
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -36,14 +36,16 @@
 
   global _ledmtx_init
 
-  code
-; extern void ledmtx_init(unsigned char, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char) __wparam
+	code
+;; extern void ledmtx_init(unsigned char flags, unsigned char width, unsigned char height,
+;;                         unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam
 _ledmtx_init:
   movwf	POSTDEC1, A
 
+;; Set initial values for `_ledmtx_config_xxx`
   movlw	2
   movff	PLUSW1, _ledmtx_config_width
-  movf	PLUSW1, w, A			; compute _ledmtx_config_stride
+  movf	PLUSW1, w, A			; _ledmtx_config_stride = ceil(_ledmtx_config_width / 8)
   rrncf	WREG, w, A
   rrncf	WREG, w, A
   rrncf	WREG, w, A
@@ -62,11 +64,13 @@ _ledmtx_init:
   movlw	6
   movff	PLUSW1, _ledmtx_config_t0con
 
+;; Initialize driver and modules
   call	_ledmtx_driver_init
   call	_ledmtx_modules_init
-  movf	PREINC1, w, A
 
-  btfss	WREG, 0, A			; clear framebuffer?
+;; Clear framebuffer if `(flags & LEDMTX_INIT_CLEAR)`
+  movf	PREINC1, w, A
+  btfss	WREG, 0, A
   bra	@init_skip_clr
 
   movwf	POSTDEC1, A
@@ -74,7 +78,8 @@ _ledmtx_init:
   movf	PREINC1, w, A
 
 @init_skip_clr:
-  btfss	WREG, 1, A			; config TMR0?
+;; Setup TMR0 if `(flags & LEDMTX_INIT_TMR0)`
+  btfss	WREG, 1, A
   bra	@init_skip_t0
 
   bsf	RCON, IPEN, A

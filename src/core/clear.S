@@ -1,7 +1,7 @@
 ;
 ; clear.S - libledmtx core: clear framebuffer
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -29,19 +29,20 @@
 
   global _ledmtx_clear
 
-  code
-; extern void ledmtx_clear(void)
+	code
+;; extern void ledmtx_clear(void)
 _ledmtx_clear:
   lfsr		0, _ledmtx_framebuffer		; FSR0 points to _ledmtx_framebuffer
-  movf		_ledmtx_config_height, w, A	; compute framebuffer size
+  movf		_ledmtx_config_height, w, A	; PRODH:PRODL holds framebuffer size in bytes
   mulwf		_ledmtx_config_stride, A
 
+;; Essentially equivalent to a `memset(&ledmtx_framebuffer, 0, ledmtx_config_height * ledmtx_config_stride)`
 @clear_loop:
-  clrf		POSTINC0, A			; *FSR0++=0
+  clrf		POSTINC0, A			; *(FSR0++) = 0
   decf		PRODL, f, A			; PRODH:PRODL--
   btfss		STATUS, C, A
   decf		PRODH, f, A
-  tstfsz	PRODH, A			; loop while PRODH:PRODL!=0
+  tstfsz	PRODH, A			; while PRODH:PRODL != 0
   bra		@clear_loop
   tstfsz	PRODL, A
   bra		@clear_loop

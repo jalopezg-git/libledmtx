@@ -1,7 +1,7 @@
 ;
-; libledmtx_stdio.S - libledmtx stdio support
+; libledmtx_stdio.S - libledmtx support for stdio (sdcc's STREAM_USER)
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -39,21 +39,20 @@ _ledmtx_stdio_y		db	0
   global _putchar
 
   code
-; extern void putchar(char c) __wparam
+;; extern void putchar(char c) __wparam
 _putchar:
-  movwf		PRODL, A		; c=='\n'?
+  movwf		PRODL, A		; if (c == '\n')
   movlw		0x0a
   cpfseq	PRODL, A
   bra		@putchar_dump
-
-  banksel	_ledmtx_stdio_x		; _ledmtx_stdio_x=0
+  banksel	_ledmtx_stdio_x		; 	_ledmtx_stdio_x = 0
   clrf		_ledmtx_stdio_x
-  incf		_ledmtx_font_sz_h, w, A	; _ledmtx_stdio_y+=(_ledmtx_font_sz_h+1)
+  incf		_ledmtx_font_sz_h, w, A	; 	_ledmtx_stdio_y += (_ledmtx_font_sz_h + 1)
   addwf		_ledmtx_stdio_y, f
   return
 
 @putchar_dump:
-  movff		PRODL, POSTDEC1		; push args
+  movff		PRODL, POSTDEC1		; call `ledmtx_putchar()`
   movff		_ledmtx_stdio_y, POSTDEC1
   movff		_ledmtx_stdio_x, POSTDEC1
   movff		_ledmtx_font_mask, POSTDEC1
@@ -62,7 +61,7 @@ _putchar:
   movlw		4
   addwf		FSR1L, f, A
 
-  incf		_ledmtx_font_sz_w, w, A	; _ledmtx_stdio_x+=(_ledmtx_font_sz_w+1)
+  incf		_ledmtx_font_sz_w, w, A	; _ledmtx_stdio_x += (_ledmtx_font_sz_w + 1)
   banksel	_ledmtx_stdio_x
   addwf		_ledmtx_stdio_x, f
   return

@@ -1,7 +1,7 @@
 ;
 ; udata.S - libledmtx core: udata section
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -32,15 +32,15 @@
   global _ledmtx_config_t0con
 
 .udata_acs_ledmtx	udata_acs
-_ledmtx_font		res 3
-_ledmtx_font_sz_w	res 1
-_ledmtx_font_sz_h	res 1
-_ledmtx_font_mask	res 1
-_ledmtx_config_width	res 1
-_ledmtx_config_height	res 1
-_ledmtx_config_stride	res 1
-_ledmtx_config_tmr0h	res 1
-_ledmtx_config_tmr0l	res 1
-_ledmtx_config_t0con	res 1
+_ledmtx_font		res 3	; The address in program memory of the current font
+_ledmtx_font_sz_w	res 1	; The width of a character (pixels)
+_ledmtx_font_sz_h	res 1	; The height of a character (pixels)
+_ledmtx_font_mask	res 1	; The bitmask of a character
+_ledmtx_config_width	res 1	; The width of the framebuffer (pixels)
+_ledmtx_config_height	res 1	; The height of the framebuffer (pixels)
+_ledmtx_config_stride	res 1	; The length of a scanline (bytes)
+_ledmtx_config_tmr0h	res 1	; The value that is preloaded in TMR0H
+_ledmtx_config_tmr0l	res 1	; The value that is preloaded in TMR0L
+_ledmtx_config_t0con	res 1	; The T0CON that was used in the call to `ledmtx_init()`
 
   end
