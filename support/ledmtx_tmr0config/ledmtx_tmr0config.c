@@ -1,7 +1,7 @@
 /*
- * ledmtx_tmr0config.c - compute TMR0H, TMR0L and T0CON values
+ * ledmtx_tmr0config.c - compute values for the TMR0H, TMR0L and T0CON registers
  *
- * Copyright (C) 2011  Javier L. Gomez
+ * Copyright (C) 2011, 2023  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -24,45 +24,41 @@
 void usage(void)
 {
   fprintf (stderr,
-	   "ledmtx_tmr0config: compute TMR0H, TMR0L and T0CON values\n"
+	   "ledmtx_tmr0config: compute values for the TMR0H, TMR0L and T0CON registers\n"
 	   "Usage: ledmtx_tmr0config <hwheight> <hz> <osc_hz>\n"
 	   "Arguments:\n"
-	   "  <hwheight>        hardware height, see driver doc\n"
-	   "  <hz>              vertrefresh hz, normally 50\n"
-	   "  <osc_hz>          microcontroller osc hz\n");
+	   "  <hwheight>        The hardware height (see driver documentation)\n"
+	   "  <hz>              The vertical refresh frequency (in Hz), normally 50\n"
+	   "  <osc_hz>          Microcontroller OSC frequency (in Hz)\n");
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   unsigned int hwheight, hz, osc_hz;
   unsigned int isr_hz, tcy;
   unsigned char prescaler = 0x0f;
   
-  if (argc != 4)
-    {
-      usage ();
-      return 1;
-    }
-  hwheight = atoi (*++argv);
-  hz = atoi (*++argv);
-  osc_hz = atoi (*++argv);
-  if (hwheight == 0 || hz == 0 || osc_hz == 0)
-    {
-      usage ();
-      return 1;
-    }
+  if (argc != 4) {
+    usage();
+    return 1;
+  }
+
+  hwheight = atoi(argv[1]);
+  hz = atoi(argv[2]);
+  osc_hz = atoi(argv[3]);
+  if (hwheight == 0 || hz == 0 || osc_hz == 0) {
+    usage();
+    return 1;
+  }
   
   osc_hz /= 4;
   isr_hz = hwheight * hz;
-  for (tcy = osc_hz / isr_hz; tcy > 0x10000; tcy /= 2)
-    {
-      if (++prescaler & 0x08)
-        {
-	  fprintf (stderr, "error: unsupported config\n");
-	  return 1;
-	}
+  for (tcy = osc_hz / isr_hz; tcy > 0x10000; tcy /= 2) {
+    if (++prescaler & 0x08) {
+      fprintf (stderr, "error: unsupported config\n");
+      return 1;
     }
-  
+  }
   if (prescaler & 0x08)
     prescaler = 0x08;
   tcy = 0x10000 - tcy;
