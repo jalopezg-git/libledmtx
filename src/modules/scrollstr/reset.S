@@ -1,7 +1,8 @@
 ;
-; reset.S - libledmtx scrollstr module: reset struct values
+; reset.S - reset descriptor to known values so that `ledmtx_scrollstr_start()`
+;           can be called again
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -25,25 +26,24 @@
   global _ledmtx_scrollstr_reset
 
   code
-; extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *)
+;; extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *desc)
 _ledmtx_scrollstr_reset:
-  movlw		1		; argument -> FSR0
+  movlw		1		; FSR0 = desc
   movff		PLUSW1, FSR0L
   movlw		2
   movff		PLUSW1, FSR0H
 
-  movlw		1		; timeout -> counter
+  movlw		1		; counter = timeout
   movff		PLUSW0, INDF0
 
   movlw		10
   addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
-
-  clrf		POSTINC0, A	; 0 -> i
-  movlw		1		; 1 -> charoff
+  clrf		POSTINC0, A	; i = 0
+  movlw		1		; charoff = 1
   movwf		POSTINC0, A
-  movlw		0x80		; 0x80 -> mask
+  movlw		0x80		; mask = 0x80
   movwf		POSTINC0, A
   return
 

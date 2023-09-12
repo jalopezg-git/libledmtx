@@ -1,7 +1,7 @@
 /*
  * ledmtx_scrollstr.h - libledmtx scrollstr module header
  *
- * Copyright (C) 2011  Javier L. Gomez
+ * Copyright (C) 2011, 2023  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -56,12 +56,12 @@ do {                                                                       \
   (arg).bitmap_mask = 0x00;                                                \
 } while(0)
 
-extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *arg);
+extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *desc);
 
 extern void ledmtx_scrollstr_interrupt(void) __naked;
-extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *arg);
-extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *arg);
+extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *desc);
+extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *desc);
 
-extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_s *arg);
+extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_s *desc);
 
 #endif

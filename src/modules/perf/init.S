@@ -1,7 +1,7 @@
 ;
-; init.S - libledmtx perf module: initialisation
+; init.S - libledmtx perf module initialisation
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -37,7 +37,11 @@ _ledmtx_perf_init:
   movff		_ledmtx_config_tmr0l, _ledmtx_perf_tmr0+0
   movff		_ledmtx_config_tmr0h, _ledmtx_perf_tmr0+1
 
-  ; 0xffff-_ledmtx_config_tmr0h:_ledmtx_config_tmr0l -> _ledmtx_perf_intrtimelimit
+;; Store the value of `0xffff - _ledmtx_config_tmr0h:_ledmtx_config_tmr0l` in
+;; _ledmtx_perf_intrtimelimit, i.e. the number of ticks before the next
+;; interrupt.  Thus, `ledmtx_perf_getintrtime() / ledmtx_perf_intrtimelimit`
+;; gives an idea of the CPU time used by the ISR, which can be used to monitor /
+;; optimize the ISR.
   setf		_ledmtx_perf_intrtimelimit+0
   setf		_ledmtx_perf_intrtimelimit+1
   movf		_ledmtx_config_tmr0l, w, A

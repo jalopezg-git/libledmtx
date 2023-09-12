@@ -1,7 +1,7 @@
 ;
 ; udata.S - libledmtx scrollstr module: udata section
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -24,9 +24,9 @@
   global _ledmtx_scrollstr_vec
 
 .udata_acs_ledmtx_scrollstr	udata_acs
-_ledmtx_scrollstr_bitmap	res	1
+_ledmtx_scrollstr_bitmap	res	1 	; Keeps track of used entries in `ledmtx_scrollstr_vec`
 
 .udata_ledmtx_scrollstr	udata
-_ledmtx_scrollstr_vec	res	16
+_ledmtx_scrollstr_vec	res	16 		; A vector of 8 entries of type `struct ledmtx_scrollstr_s *`
 
   end

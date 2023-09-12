@@ -1,8 +1,8 @@
 ;
-; interrupt.S - libledmtx scrollstr module: decrement counter and call step()
-;               for _ledmtx_scrollstr_vec entries
+; interrupt.S - decrement counter and call `step()` as appropriate for
+;               `_ledmtx_scrollstr_vec` entries
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -32,39 +32,40 @@
   global _ledmtx_scrollstr_interrupt
 
   code
-; extern void ledmtx_scrollstr_interrupt(void)
+;; extern void ledmtx_scrollstr_interrupt(void)
 _ledmtx_scrollstr_interrupt:
-  lfsr		2, _ledmtx_scrollstr_vec	; _ledmtx_scrollstr_vec -> FSR2
-  movlw		0x01
+  lfsr		2, _ledmtx_scrollstr_vec	; FSR2 = _ledmtx_scrollstr_vec
 
-@interrupt_loop:
+  movlw		0x01
+@interrupt_loop:				; `do {`
   movwf		POSTDEC1, A
-  andwf		_ledmtx_scrollstr_bitmap, w, A	; WREG&_ledmtx_scrollstr_bitmap!=0?
+  andwf		_ledmtx_scrollstr_bitmap, w, A	; if (WREG & ~_ledmtx_scrollstr_bitmap)
   bz		@interrupt_free
 
-  movff		POSTINC2, FSR0L			; *FSR2 -> FSR0
+  movff		POSTINC2, FSR0L			; FSR0 = *(FSR2); FSR2 += 2
   movff		POSTINC2, FSR0H
-  decfsz	INDF0, f, A			; --counter==0?
+  decfsz	INDF0, f, A			; if (--counter != 0)
   bra		@interrupt_nz
 
-  movff		FSR0H, POSTDEC1			; push arg
+;; Issue indirect call to the `step()` function
+  movff		FSR0H, POSTDEC1
   movff		FSR0L, POSTDEC1
   movlw		1
-  movff		PLUSW0, POSTINC0		; timeout -> counter
+  movff		PLUSW0, POSTINC0		; 	counter = timeout
   movf		POSTINC0, f, A
-  call		_ledmtx_scrollstr_call_fsr0	; call step
+  call		_ledmtx_scrollstr_call_fsr0
   movf		PREINC1, f, A
   movf		PREINC1, f, A
   bra		@interrupt_nz
 
 @interrupt_free:
-  movf		POSTINC2, f, A			; FSR2+2 -> FSR2
+  movf		POSTINC2, f, A			; FSR2 += 2
   movf		POSTINC2, f, A
 
 @interrupt_nz:
   bcf		STATUS, C, A
-  rlcf		PREINC1, w, A			; pop WREG; shift
-  bnz		@interrupt_loop
+  rlcf		PREINC1, w, A			; WREG = WREG << 1
+  bnz		@interrupt_loop			; `} while (WREG)`
   return
 
   end

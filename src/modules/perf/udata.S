@@ -1,7 +1,7 @@
 ;
 ; udata.S - libledmtx perf module: udata section
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -24,7 +24,7 @@
   global _ledmtx_perf_intrtimelimit
 
 .udata_ledmtx_perf	udata
-_ledmtx_perf_tmr0		res	2
-_ledmtx_perf_intrtimelimit	res	2
+_ledmtx_perf_tmr0		res	2 ; The value of TMR0L:TMR0H at end of the ISR
+_ledmtx_perf_intrtimelimit	res	2 ; The upper bound of `_ledmtx_perf_tmr0`
 
   end

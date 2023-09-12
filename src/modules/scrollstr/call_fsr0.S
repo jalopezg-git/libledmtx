@@ -1,7 +1,7 @@
 ;
-; call_fsr0.S - libledmtx scrollstr module: call routine using FSR0
+; call_fsr0.S - do indirect jump via FSR0
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by

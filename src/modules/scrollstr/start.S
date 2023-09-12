@@ -1,7 +1,8 @@
 ;
-; start.S - libledmtx scrollstr module: add pointer to _ledmtx_scrollstr_vec
+; start.S - Find a free slot in `_ledmtx_scrollstr_vec` and schedule `desc` for
+;           the next ISR call
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -29,37 +30,42 @@
   global _ledmtx_scrollstr_start
 
   code
-; extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *)
+;; extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *desc)
 _ledmtx_scrollstr_start:
-  lfsr		0, _ledmtx_scrollstr_vec	; _ledmtx_scrollstr_vec -> FSR0
+  lfsr		0, _ledmtx_scrollstr_vec	; FSR0 = _ledmtx_scrollstr_vec
+
+;; While iterating, WREG holds a bitmask that has a single 1 corresponding to
+;; the  position of the current entry.
   movlw		0x01
   bcf		STATUS, C, A
-
-@start_loop:
-  movwf		POSTDEC1, A			; push WREG
-  andwf		_ledmtx_scrollstr_bitmap, w, A	; WREG&_ledmtx_scrollstr_bitmap==0?
+@start_loop:				       	; `do {`
+;; Find a free slot in `_ledmtx_scrollstr_vec`
+  movwf		POSTDEC1, A			;	push WREG
+  andwf		_ledmtx_scrollstr_bitmap, w, A	;	if (WREG & ~_ledmtx_scrollstr_bitmap)
   bnz		@start_used
 
-  movlw		2				; argument -> *FSR0
+;; Set `_ledmtx_scrollstr_vec[i] = desc`, where `i` is some free slot
+  movlw		2
   movff		PLUSW1, POSTINC0
   movlw		3
   movff		PLUSW1, POSTINC0
 
-  movff		PLUSW1, FSR0H			; argument -> FSR0
+;; Set `desc->mask = WREG`
+  movff		PLUSW1, FSR0H			; FSR0 = desc
   movlw		2
   movff		PLUSW1, FSR0L
-  movlw		16				; pop WREG -> FSR0+16
+  movlw		16				; *(FRS0 + 16) = WREG
   movff		PREINC1, PLUSW0
 
-  movf		INDF1, w, A			; _ledmtx_scrollstr_bitmap|=WREG
+  movf		INDF1, w, A			; _ledmtx_scrollstr_bitmap |= WREG
   iorwf		_ledmtx_scrollstr_bitmap, f, A
   return
 
 @start_used:
-  movf		POSTINC0, f, A			; FSR0+2 -> FSR0
+  movf		POSTINC0, f, A			; FSR0 += 2
   movf		POSTINC0, f, A
-  rlcf		PREINC1, w, A			; pop WREG; shift
-  bnz		@start_loop
+  rlcf		PREINC1, w, A			; WREG = WREG << 1
+  bnz		@start_loop			; `} while (WREG)`
   retlw		0
 
   end

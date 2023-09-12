@@ -1,7 +1,7 @@
 ;
-; stop.S - libledmtx scrollstr module: free _ledmtx_scrollstr_vec entry
+; stop.S - Mark a `_ledmtx_scrollstr_vec` entry as free
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -28,18 +28,18 @@
   global _ledmtx_scrollstr_stop
 
   code
-; extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *)
+;; extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *desc)
 _ledmtx_scrollstr_stop:
-  movlw		1				; argument -> FSR0
+  movlw		1				; FSR0 = desc
   movff		PLUSW1, FSR0L
   movlw		2
   movff		PLUSW1, FSR0H
 
-  movlw		16				; _ledmtx_scrollstr_bitmap&=~*(FSR0+16)
+  movlw		16				; _ledmtx_scrollstr_bitmap &= ~*(FSR0 + 16)
   movf		PLUSW0, w, A
   xorlw		0xff
   andwf		_ledmtx_scrollstr_bitmap, f, A
-  movlw		16				; 0 -> *(FSR0+16)
+  movlw		16				; *(FSR0+16) = 0
   clrf		PLUSW0, A
   return
 

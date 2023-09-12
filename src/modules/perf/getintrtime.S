@@ -1,7 +1,7 @@
 ;
-; getintrtime.S - libledmtx perf module: return interrupt time
+; getintrtime.S - return the number of ticks took by the ISR to complete
 ;
-; Copyright (C) 2011  Javier L. Gomez
+; Copyright (C) 2011, 2023  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -30,11 +30,14 @@
   global _ledmtx_perf_getintrtime
 
   code
-; extern unsigned int ledmtx_perf_getintrtime(void)
+;; extern unsigned int ledmtx_perf_getintrtime(void)
 _ledmtx_perf_getintrtime:
   banksel	_ledmtx_perf_tmr0
 
-  ; return _ledmtx_perf_tmr0-_ledmtx_config_tmr0h:_ledmtx_config_tmr0l
+;; The `TMR0(H|L)` registers are set to the value of `_ledmtx_config_tmr0(h|l)`
+;; at the beginning of the ISR; `_ledmtx_perf_tmr0` is set at the end before the
+;; `retfie` instruction, thus return (_ledmtx_perf_tmr0
+;;	- _ledmtx_config_tmr0h:_ledmtx_config_tmr0l)
   movf		_ledmtx_config_tmr0l, w, A
   subwf		_ledmtx_perf_tmr0+0, w
   movwf		POSTDEC1, A
