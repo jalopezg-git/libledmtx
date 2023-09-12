@@ -56,9 +56,12 @@ extern char ledmtx_config_t0con;
   #define LEDMTX_R0_RESTORE_TBLRD
 #endif
 
+/// Declare a framebuffer of size `size` (in bytes)
 #define LEDMTX_FRAMEBUFFER_RES(size) \
   unsigned char ledmtx_framebuffer[size];
 
+/// Prologue for the ISR of a timer interrupt (usually Timer0).  Such ISR is
+/// responsible for carrying out the display vertical refresh.
 #define LEDMTX_BEGIN_ISR                              \
   __asm bcf   _INTCON, 2, 0 __endasm; /* TMR0IF, A */ \
   __asm movff _ledmtx_config_tmr0h, _TMR0H __endasm;  \
@@ -75,6 +78,7 @@ extern char ledmtx_config_t0con;
   #define LEDMTX_RETFIE           __asm retfie __endasm;
 #endif
 
+/// Epilogue of the ISR
 #define LEDMTX_END_ISR                         \
   __asm movff _PREINC1, _FSR0L __endasm;       \
   __asm movff _PREINC1, _FSR0H __endasm;       \
@@ -85,39 +89,78 @@ extern char ledmtx_config_t0con;
   __asm movff _PREINC1, _STATUS __endasm;      \
   LEDMTX_RETFIE
 
+/// Issue a call to the driver-specific routine for vertical refresh
 #define LEDMTX_VERTREFRESH        __asm call _ledmtx_driver_vertrefresh __endasm;
 
+/// Begin of a section of code that is only executed for the first scanline, i.e.
+/// once for each full scan
 #define LEDMTX_BEGIN_R0                                \
   __asm tstfsz _ledmtx_driver_row, 0 __endasm; /* A */ \
   __asm bra    @ledmtx_end_r0 __endasm;                \
   LEDMTX_R0_STORE_FSR2                                 \
   LEDMTX_R0_STORE_TBLRD
 
+/// Mark the end of a `LEDMTX_BEGIN_R0` section
 #define LEDMTX_END_R0             \
   LEDMTX_R0_RESTORE_TBLRD         \
   LEDMTX_R0_RESTORE_FSR2          \
   __asm @ledmtx_end_r0: __endasm;
 
-#define LEDMTX_INIT_CLEAR         0x01
-#define LEDMTX_INIT_TMR0          0x02
+/* Flags for `ledmtx_init()` */
+#define LEDMTX_INIT_CLEAR         0x01         ///< Clear the framebuffer
+#define LEDMTX_INIT_TMR0          0x02         ///< Initialize Timer 0
 
-#define LEDMTX_PUTCHAR_CPY        0x00
-#define LEDMTX_PUTCHAR_IOR        0x01
+/* Constants that may be used as the `op` argument in `ledmtx_putchar()` */
+#define LEDMTX_PUTCHAR_CPY        0x00         ///< Copy character bits
+#define LEDMTX_PUTCHAR_IOR        0x01         ///< Bitwise OR
 
-extern unsigned char ledmtx_font_sz_w;
-extern unsigned char ledmtx_font_sz_h;
-extern unsigned char ledmtx_font_mask;
+extern unsigned char ledmtx_font_sz_w; /// Width of the current font (pixels)
+extern unsigned char ledmtx_font_sz_h; /// Height of the current font (pixels)
+extern unsigned char ledmtx_font_mask; /// The character mask
 
-extern void ledmtx_init(unsigned char flags, unsigned char width, unsigned char height, unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam;
+/// Initialize the library and setup the display driver
+/// \param flags A combination of one or more `LEDMTX_INIT_xxx` constants
+/// \param width The width of the framebuffer in pixels
+/// \param height The height of the framebuffer in pixels
+/// \param tmr0h If `LEDMTX_INIT_TMR0` is specified in `flags`, the value used
+///              to preload TMR0H
+/// \param tmr0l If `LEDMTX_INIT_TMR0` is specified in `flags`, the value used
+///              to preload TMR0L
+/// \param T0C0N The value to be copied to the Timer 0 configuration register
+extern void ledmtx_init(unsigned char flags, unsigned char width, unsigned char height,
+                        unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam;
 
+/// Clear the framebuffer
 extern void ledmtx_clear(void);
+
+/// Set the value of a pixel
 extern void ledmtx_putpixel(unsigned char x, unsigned char y, unsigned char val);
 
-extern void ledmtx_putchar(unsigned char op, unsigned char mask, unsigned char x, unsigned char y, char c) __wparam;
-extern void ledmtx_putstr(unsigned char x, unsigned char y, __data char *str);
+/// Set the current font for text operations
 extern void ledmtx_setfont(__far void (*font)(void));
 
+/// Put a character using the current font
+/// \param op One of the constants `LEDMTX_PUTCHAR_xxx`
+/// \param mask The mask to apply for each of the scanlines.  This can be used
+///             to mask out parts of a glyph
+/// \param x The (x) coordinate
+/// \param y The (y) coordinate
+/// \param c The character
+extern void ledmtx_putchar(unsigned char op, unsigned char mask, unsigned char x, unsigned char y,
+                           char c) __wparam;
+
+/// Put a string of characters.  Characters that are not fully visible are cropped
+/// \param x The (x) coordinate
+/// \param y The (y) coordinate
+/// \param str A pointer to the first character of a NUL-terminated string
+extern void ledmtx_putstr(unsigned char x, unsigned char y, __data char *str);
+
+/// Scroll left a region of size w X h, located at (x, y).  `x` and `w` should
+/// be a multiple of 8
 extern void ledmtx_scroll_l(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
+
+/// Scroll right a region of size w X h, located at (x, y).  `x` and `w` should
+/// be a multiple of 8
 extern void ledmtx_scroll_r(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 
 #endif

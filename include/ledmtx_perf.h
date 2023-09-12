@@ -26,6 +26,7 @@
 extern char ledmtx_perf_init;
 
 extern char ledmtx_perf_tmr0;
+/// The number of ticks before the next interrupt
 extern unsigned int ledmtx_perf_intrtimelimit;
 
 #define LEDMTX_RETFIE                               \
@@ -33,6 +34,9 @@ extern unsigned int ledmtx_perf_intrtimelimit;
   __asm movff _TMR0H, _ledmtx_perf_tmr0+1 __endasm; \
   __asm retfie __endasm;
 
+/// Return the number of ticks took by the ISR to complete.
+/// `ledmtx_perf_getintrtime() / ledmtx_perf_intrtimelimit` gives an idea of the
+/// CPU time used by the ISR, which can be used to monitor / optimize the ISR.
 extern unsigned int ledmtx_perf_getintrtime(void);
 
 #endif

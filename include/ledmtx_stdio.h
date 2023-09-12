@@ -1,7 +1,7 @@
 /*
  * ledmtx_stdio.h - libledmtx stdio support header
  *
- * Copyright (C) 2011  Javier L. Gomez
+ * Copyright (C) 2011, 2023  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -20,10 +20,14 @@
 
 #ifndef __LEDMTX_STDIO_H__
 #define __LEDMTX_STDIO_H__
+
 extern unsigned char ledmtx_stdio_x;
 extern unsigned char ledmtx_stdio_y;
 
-#define LEDMTX_HOME()           do { ledmtx_stdio_x = ledmtx_stdio_y = 0; } while(0)
+/// Set the (x,y) as the coordinates for the next stdio call, e.g. `printf()`
 #define LEDMTX_GOTO(x, y)       do { ledmtx_stdio_x = x; ledmtx_stdio_y = y; } while(0)
+
+/// Set the (0,0) as the coordinates for the next stdio call
+#define LEDMTX_HOME()           do { ledmtx_stdio_x = ledmtx_stdio_y = 0; } while(0)
 
 #endif
