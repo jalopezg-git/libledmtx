@@ -35,7 +35,7 @@ char str[] = "scrollstr32x7: using r393c164 driver to refresh a 32x7 display";
 
 void main(void)
 {
-  struct ledmtx_scrollstr_s s0;
+  struct ledmtx_scrollstr_desc s0;
   
   TRISA = 0xe0;
   ADCON1 = 0x0f;

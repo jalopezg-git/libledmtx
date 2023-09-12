@@ -28,10 +28,10 @@ extern char ledmtx_scrollstr_init;
 
 /// Structure that describes an action to asynchronously scroll a string directly
 /// from a timer ISR
-struct ledmtx_scrollstr_s {
+struct ledmtx_scrollstr_desc {
   unsigned char counter;
   unsigned char timeout;        ///< Interval between steps
-  __far void (*step)(__data struct ledmtx_scrollstr_s *);   ///< The step function
+  __far void (*step)(__data struct ledmtx_scrollstr_desc *);   ///< The step function
   unsigned char w;              ///< Width of the region
   unsigned char y;              ///< The (y) coordinate of the region
   unsigned char x;              ///< The (x) coordinate of the region
@@ -39,12 +39,12 @@ struct ledmtx_scrollstr_s {
   char i;                       ///< Index of the character currently being drawn
   unsigned char charoff;        ///< An offset, relative to `w + x`, used to draw the character
   unsigned char mask;           ///< Character mask passed to `ledmtx_putchar()`
-  __far void (*end)(__data struct ledmtx_scrollstr_s *);    ///< A function to be called at end
+  __far void (*end)(__data struct ledmtx_scrollstr_desc *);    ///< A function to be called at end
   unsigned char bitmap_mask;    ///< Mask that specifies which entry is used in `ledmtx_scroll_vec`
 };
 
 // FIXME: this should probably be turned into a function instead.
-/// Helper to initialize a `struct ledmtx_scrollstr_s`
+/// Helper to initialize a `struct ledmtx_scrollstr_desc`
 #define LEDMTX_SCROLLSTR_SET(desc, _timeout, _x, _y, _w, _str, _step, _end) \
 do {                                                                        \
   (desc).counter = (desc).timeout = _timeout;                               \
@@ -66,16 +66,16 @@ extern void ledmtx_scrollstr_interrupt(void) __naked;
 
 /// Return a descriptor to a ready state so that `ledmtx_scrollstr_start()` can
 /// be called again on it
-extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *desc);
+extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_desc *desc);
 
 /// Start an asynchronous scroll of the character string referenced in `desc`
-extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *desc);
+extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_desc *desc);
 
 /// Stop an asynchronous scroll
-extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *desc);
+extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_desc *desc);
 
 /// Manually carry out a scroll left + put character step.  Usually, this routine
 /// is called indirectly from the ISR for all scheduled actions.
-extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_s *desc);
+extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_desc *desc);
 
 #endif

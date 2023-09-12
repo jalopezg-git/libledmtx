@@ -28,7 +28,7 @@
   global _ledmtx_scrollstr_stop
 
   code
-;; extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_s *desc)
+;; extern void ledmtx_scrollstr_stop(__data struct ledmtx_scrollstr_desc *desc)
 _ledmtx_scrollstr_stop:
   movlw		1				; FSR0 = desc
   movff		PLUSW1, FSR0L

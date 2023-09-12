@@ -26,7 +26,7 @@
   global _ledmtx_scrollstr_reset
 
   code
-;; extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_s *desc)
+;; extern void ledmtx_scrollstr_reset(__data struct ledmtx_scrollstr_desc *desc)
 _ledmtx_scrollstr_reset:
   movlw		1		; FSR0 = desc
   movff		PLUSW1, FSR0L

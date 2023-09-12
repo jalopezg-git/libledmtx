@@ -33,7 +33,7 @@
   global _ledmtx_scrollstr_step
 
   code
-;; extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_s *desc)
+;; extern void ledmtx_scrollstr_step(__data struct ledmtx_scrollstr_desc *desc)
 _ledmtx_scrollstr_step:
   movff		FSR2H, POSTDEC1		; push FSR2x
   movff		FSR2L, POSTDEC1

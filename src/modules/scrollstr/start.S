@@ -30,7 +30,7 @@
   global _ledmtx_scrollstr_start
 
   code
-;; extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_s *desc)
+;; extern unsigned char ledmtx_scrollstr_start(__data struct ledmtx_scrollstr_desc *desc)
 _ledmtx_scrollstr_start:
   lfsr		0, _ledmtx_scrollstr_vec	; FSR0 = _ledmtx_scrollstr_vec
 

@@ -27,6 +27,6 @@
 _ledmtx_scrollstr_bitmap	res	1 	; Keeps track of used entries in `ledmtx_scrollstr_vec`
 
 .udata_ledmtx_scrollstr	udata
-_ledmtx_scrollstr_vec	res	16 		; A vector of 8 entries of type `struct ledmtx_scrollstr_s *`
+_ledmtx_scrollstr_vec	res	16 		; A vector of 8 entries of type `struct ledmtx_scrollstr_desc *`
 
   end
