@@ -1,82 +1,89 @@
-# libledmtx: a library for LED dot-matrix handling written in PIC18 assembler
+# libledmtx: a library to drive LED dot-matrix displays written in PIC18 assembler
 
 ## Introduction
-The libledmtx project was developed as a subproject of p18clock.  libledmtx
-drives LED dot matrix displays.  It has been completely written in PIC18
-assembler and links against code compiled with the pic16 port of sdcc, but
-it can be linked against assembler code as long as you follow sdcc call
-convention.
+The libledmtx project was developed as a subproject of [p18clock](https://github.com/jalopezg-git/p18clock).
+The library is completely written in PIC18 assembler and follows the call convention of the [SDCC](http://sdcc.sourceforge.net/) pic16 port.
+Exported routines are meant to be called in by C code.
+If you intend to issue calls from assembler, make sure that you follow the [pic16 port](http://sdcc.sourceforge.net/doc/sdccman.pdf) call convention.
+
+![libledmtx driving a LED display](doc/demo.jpg)
 
 ## Building libledmtx
 Before compiling the library make sure you have this installed:
-- gputils
-- make
+- [gputils](https://gputils.sourceforge.io/) (the GNU PIC utilities), providing an assembler, librarian, and linker
+- GNU make
 
-To compile libledmtx change to the directory where you extracted libledmtx
-and type `make`.  To compile the examples included, change to the examples
-directory and type `make`.
+To build libledmtx change to the directory where you extracted libledmtx and type
+```bash
+$ make
+
+# To also compile the included examples
+$ cd examples/
+$ make
+````
 
 ## Installing
-To install the library files change to the directory where you extracted
-libledmtx and type `make LIBDIR=xxx INCLUDEDIR=xxx BINDIR=xxx install`.  Paths
-should be absolute.  Example:
+To install the library files change to the directory where you extracted libledmtx and run `make install` providing the path to the installation directories as in
+```bash
+$ make LIBDIR=/path/to/lib INCLUDEDIR=/path/to/include BINDIR=/path/to/bin install
 ```
-$ make LIBDIR=/usr/home/bart/projects/sdcc-pic16/libledmtx/lib
- INCLUDEDIR=/usr/home/bart/projects/sdcc-pic16/libledmtx/include
- BINDIR=/usr/home/bart/projects/sdcc-pic16/libledmtx/bin
+E.g.,
+```bash
+$ make LIBDIR=$HOME/libledmtx/lib INCLUDEDIR=$HOME/libledmtx/include BINDIR=$HOME/libledmtx/bin install
 ```
 
 ## Hardware
-Refer to docs in the hardware directory.  You may have to manually configure
-I/O ports.  Normally this is done with TRISx/ADCON1.
+Refer to docs in the [hardware](https://github.com/jalopezg-git/libledmtx/tree/master/doc/hardware/) directory.
+The r393c164 driver requires a `ledmtx_r393c164.inc` configuration file that specifies which I/O port and pins to use for each output signal.
+The used I/O port still should be manually configured writing to the `TRISx` / `ADCON1` registers.
 
-## Limits
+## Examples
+Some minimal examples are available in the [examples](https://github.com/jalopezg-git/libledmtx/tree/master/examples/) directory.
+- [hello32x7](https://github.com/jalopezg-git/libledmtx/blob/master/examples/hello32x7/hello32x7.c), a simple program that prints "hello" using `printf()` (via the `STREAM_USER` stdio stream).
+- [scrollstr32x7](https://github.com/jalopezg-git/libledmtx/blob/master/examples/scrollstr32x7/scrollstr32x7.c), that exercises the scrollstr module to asynchronously scroll a long text.
+
+## Issues / limits
 core:
-- Framebuffer size:	255x255
-- Font size limit:		8x255 (greater than VGA 8x14 is probably useless)
-- For the `scroll_l()` and `scroll_r()` functions, the 3 least-significant-bits of `x` and `width` are ignored.
+- Maximum framebuffer size:	255x255
+- Maximum size of a character:		8x255 (greater than VGA 8x14 is probably useless?)
 
 r393c164 driver:
-- High row count probably looks dimmed, due to multiplexing.
+- High row count most probably looks dimmed, due to multiplexing.
 
 scrollstr module:
-- Auto scroll vector capacity:		8 entries
-- Maximum string length:		128 chars (including \0)
-
-Obviously, this is limited by your data/program memory size.
+- Auto-scroll vector capacity:		8 entries
+- Maximum string length:		128 chars (including `\0`)
 
 ## Notes on linking against libledmtx
-- Copy `Makefile.template` to you project directory and tune it.
-  Change the value of the `P18FXXX`, `LIBDIR`, `INCLUDEDIR`, `O` and `modules`
-  variables.  LIBDIR and INCLUDEDIR should point to libledmtx install
-  directories.  `O` and `MODULES` list additional libledmtx objects/libraries
-  that should be linked.  `OBJECTS +=` line should list your project object
-  files.
+This section provides general guidelines to use and link libledmtx in your project.
 
-- Write config file for the driver.
-  For the r393c164 driver, the file `ledmtx_r393c164.inc` (located in your
-  project's directory), should look like
-  this.  Change the values of the symbols appropiate for your hardware.
+1. Copy [`Makefile.template`](https://github.com/jalopezg-git/libledmtx/blob/master/doc/Makefile.template) to you project directory and tune it.
+In particular, the value of the `P18FXXX`, `LIBDIR`, `INCLUDEDIR`, `O` and `modules` variables should be set accordingly.
+`LIBDIR` and `INCLUDEDIR` should point to the libledmtx install directories.
+`O` and `MODULES` list additional libledmtx objects and/or libraries that should be linked.
+The `OBJECTS +=` line should list your project object files.
 
+2. Write configuration file for the driver.
+For the r393c164 driver, the file `ledmtx_r393c164.inc` (located in your project's directory), should look like this.  The I/O port and pins should be changed to reflect your wiring.
+```
   LEDMTX_R393C164_IOPORT	equ	PORTA
   LEDMTX_R393C164_RCLK		equ	RA0
   LEDMTX_R393C164_RRST		equ	RA1
   LEDMTX_R393C164_RENA		equ	RA2
   LEDMTX_R393C164_CCLK		equ	RA3
   LEDMTX_R393C164_CDAT		equ	RA4
-
-- LEDMTX_BEGIN_MODULES_INIT/LEDMTX_END_MODULES_INIT macros are mandatory
-  even if you are not using any module.  .h files for modules should be
-  included before ledmtx_core.h.  Declare framebuffer using the following macro:
 ```
+
+3. The `LEDMTX_BEGIN_MODULES_INIT` / `LEDMTX_END_MODULES_INIT` section is mandatory even if you are not using any module.
+Header files for any module should be `#include`d before `ledmtx_core.h`.
+A framebuffer (i.e., a small data memory area that stores the current frame) should be declared as follows:
+```c
   LEDMTX_FRAMEBUFFER_RES(size)
 ```
-where size=height*ceil(width/8).
+where $size = height * ceil(width / 8)$.
 
-- If you are using TMR0 interrupts to call driver vertical refresh routine,
-  you should also include this code:
-
-```
+4. If you are using TMR0 interrupts to call the driver-specific routine for vertical refresh, you should also include the following code:
+```c
   DEF_INTLOW(low_int)
   DEF_HANDLER(SIG_TMR0, _tmr0_handler)
   END_DEF
@@ -89,17 +96,15 @@ where size=height*ceil(width/8).
   }
 ```
 
-- `ledmtx_init()` should be called on initialisation.  If you are using TMR0
-  to call driver vertrefresh routine, you should compute TMR0H, TMR0L and
-  T0CON values using the `ledmtx_tmr0config` tool (included in the support/
-  directory).  Example:
-
-```
-  /* init libledmtx 32x7@50hz display (Fosc=8mhz) */
-  ledmtx_init(LEDMTX_INIT_CLEAR|LEDMTX_INIT_TMR0,32,7,0xe9,0xae,0x88)
+5. `ledmtx_init()` should be called on initialisation.  If you intend to use Timer0 to drive the display, you should compute proper values for the `TMR0H`, `TMR0L` and `T0CON` registers.
+The `ledmtx_tmr0config` tool included in the [support/](https://github.com/jalopezg-git/libledmtx/tree/master/support/) directory automates this task.
+Example:
+```c
+  // Initialize libledmtx for a 32x7 @ 50Hz display (assuming Fosc == 8MHz)
+  // The last three arguments were computed by `$ ledmtx_tmr0config 7 50 8000000`
+  ledmtx_init(LEDMTX_INIT_CLEAR | LEDMTX_INIT_TMR0, 32, 7, 0xe9, 0xae, 0x88)
 ```
 
 ## Contributing
-Users are welcome to contribute this project either with code, fixes
-or hardware.  If you are interested feel free to drop a mail to
-`<jalopezg AT inf.uc3m.es>`.
+Contributions either in the form of new features / fixes, hardware improvements, or documentation are welcome :+1:.
+Feel free to open a pull request if you have something to say!
