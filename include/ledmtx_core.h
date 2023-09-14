@@ -23,7 +23,7 @@
 
 #include <pic18fregs.h>
 
-#ifndef STACK_MODEL_SMALL
+#ifdef STACK_MODEL_LARGE
   #error Unsupported stack model
 #endif
 
