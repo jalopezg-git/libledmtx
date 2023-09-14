@@ -7,7 +7,7 @@ DRIVER = r393c164
 OBJECTS = $(DRIVER:%=libledmtx_%.o) $(SRCDIR)/font/libledmtx_font5x7.o
 LFLAGS = -mpic16 -p$(P18FXXX) -Wl-m -L$(SRCDIR)/core -L$(SRCDIR)/modules/scrollstr \
   -l libledmtx_core.lib -l libledmtx_scrollstr.lib
-CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small -I$(SRCDIR)/../include
+CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small --use-non-free -I$(SRCDIR)/../include
 
 OBJECTS += scrollstr32x7.o
 

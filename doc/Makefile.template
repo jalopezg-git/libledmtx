@@ -12,7 +12,7 @@ MODULES =
 OBJECTS = $(DRIVER:%=libledmtx_%.o) $(O:%=$(LIBDIR)/libledmtx_%.o)
 LFLAGS = -mpic16 -p$(P18FXXX) -Wl-m -L$(LIBDIR) -l libledmtx_core.lib \
   $(MODULES:%=-l libledmtx_%.lib)
-CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small -I$(INCLUDEDIR)
+CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small --use-non-free -I$(INCLUDEDIR)
 
 OBJECTS += 
 
