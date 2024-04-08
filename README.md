@@ -42,6 +42,19 @@ Some minimal examples are available in the [examples](https://github.com/jalopez
 - [hello32x7](https://github.com/jalopezg-git/libledmtx/blob/master/examples/hello32x7/hello32x7.c), a simple program that prints "hello" using `printf()` (via the `STREAM_USER` stdio stream).
 - [scrollstr32x7](https://github.com/jalopezg-git/libledmtx/blob/master/examples/scrollstr32x7/scrollstr32x7.c), that exercises the scrollstr module to asynchronously scroll a long text.
 
+## How does it work?
+libledmtx reserves part of the device's RAM as video memory (framebuffer).  The framebuffer is encoded left to right, top to bottom, 1bpp, i.e. each byte holds the value of 8 pixels.
+The library has two distinct parts: a set of routines that alter the contents of the framebuffer, and the 'driver', which periodically reads (parts of) the framebuffer and changes the state of the appropriate MCU I/O pins in order to drive the simple video hardware (see [Hardware](https://github.com/jalopezg-git/libledmtx/#hardware)).
+The driver is usually activated as part of the libledmtx interrupt service routine (ISR).
+
+![libledmtx overview](doc/overview.png)
+
+libledmtx offers a [core](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h) set of routines (e.g. `ledmtx_putpixel()`, `ledmtx_setfont()`, or `ledmtx_putchar()`), and a set of modules that can be optionally linked in order to extend the core's capabilities.  Specifically, the following modules are supported:
+- `scrollstr`: helper for character string scroll.  Allows automatic scroll of up to 8 strings from the ISR (see [`ledmtx_scrollstr_start()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_scrollstr.h)).
+- `perf`: measures time taken to service the libledmtx interrupt.
+
+As of april 2024, there are plans to enable libledmtx to work with multiple buffers, e.g. to implement double buffering.
+
 ## Issues / limits
 core:
 - Maximum framebuffer size:	255x255
