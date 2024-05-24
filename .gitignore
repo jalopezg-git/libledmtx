@@ -2,5 +2,5 @@
 *.o
 *.lst
 *.lib
-src/p18fxxx.inc
+include/ledmtx_config.h
 support/ledmtx_tmr0config/ledmtx_tmr0config
