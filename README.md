@@ -48,6 +48,9 @@ libledmtx reserves part of the device's RAM as video memory (framebuffer).  The 
 The library has two distinct parts: a set of routines that alter the contents of the framebuffer, and the 'driver', which periodically reads (parts of) the framebuffer and changes the state of the appropriate MCU I/O pins in order to drive the simple video hardware (see [Hardware](https://github.com/jalopezg-git/libledmtx/#hardware)).
 The driver is usually activated as part of the libledmtx interrupt service routine (ISR).
 
+For the sake of efficiency, libledmtx tries to avoid using the `BSR` register where possible; thus, frequently accessed data is kept in the Access Bank.
+Note that neither SDCC nor libledmtx support the PIC18 Extended Instruction Set (XINST).
+
 ![libledmtx overview](doc/overview.png)
 
 libledmtx offers a [core](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h) set of routines (e.g. `ledmtx_putpixel()`, `ledmtx_setfont()`, or `ledmtx_putchar()`), and a set of modules that can be optionally linked in order to extend the core's capabilities.  Specifically, the following modules are supported:
