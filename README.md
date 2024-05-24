@@ -12,6 +12,7 @@ If you intend to issue calls from assembler, make sure that you follow the [pic1
 Before compiling the library make sure you have this installed:
 - [gputils](https://gputils.sourceforge.io/) (the GNU PIC utilities), providing an assembler, librarian, and linker
 - GNU make
+- GNU gettext-runtime (provides `envsubst`)
 
 To build libledmtx change to the directory where you extracted libledmtx and type
 ```bash
