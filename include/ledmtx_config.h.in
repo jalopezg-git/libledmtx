@@ -1,0 +1,17 @@
+#if 0
+; This file has been autogenated by `make`. Do not modify it.
+;
+; `ledmtx_config.h` contains several PP macro definitions that describe how
+; libledmtx was configured at build time.  This file can be parsed by both the C
+; preprocessor and gpasm.
+#endif
+
+#ifndef __LEDMTX_CONFIG_H__
+#define __LEDMTX_CONFIG_H__
+
+#define _P18FXXX "${_P18FXXX}"
+#define _P18FXXX_INC "${_P18FXXX_INC}"
+
+#define LEDMTX_GITREVISION "${LEDMTX_GITREVISION}"
+
+#endif

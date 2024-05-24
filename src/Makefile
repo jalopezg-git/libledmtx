@@ -1,7 +1,7 @@
 include make.mk
 
 SRCDIR = .
-OBJECTS = p18fxxx.inc libledmtx_stdio.o
+OBJECTS = libledmtx_stdio.o
 SUBDIRS = core driver font modules
 
 all: $(OBJECTS)
@@ -28,6 +28,3 @@ mkdir-install:
 
 %.o: %.S
 	$(AS) -c $(AFLAGS) -o $@ $<
-
-p18fxxx.inc: make.mk
-	echo "include <p$(P18FXXX).inc>" > p18fxxx.inc

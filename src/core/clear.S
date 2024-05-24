@@ -20,7 +20,8 @@
 
   radix dec
 
-  include <p18fxxx.inc>
+  include <ledmtx_config.h>
+  include _P18FXXX_INC
 
   ; udata
   extern _ledmtx_config_height
