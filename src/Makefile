@@ -27,4 +27,4 @@ mkdir-install:
 	[ -d $(LIBDIR) ] || mkdir -p $(LIBDIR)
 
 %.o: %.S
-	$(AS) -c $(AFLAGS) -o $@ $<
+	$(AS) -c $(ASFLAGS) -o $@ $<

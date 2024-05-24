@@ -18,4 +18,4 @@ libledmtx_scrollstr.lib: $(OBJECTS)
 	$(GPLIB) -c $@ $^
 
 %.o: %.S
-	$(AS) -c $(AFLAGS) -o $@ $<
+	$(AS) -c $(ASFLAGS) -o $@ $<

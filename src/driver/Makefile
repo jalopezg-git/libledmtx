@@ -4,7 +4,7 @@ SRCDIR = ..
 SOURCES = libledmtx_r393c164.S Makefile
 
 ifdef O
-AFLAGS += -I $(O)
+ASFLAGS += -I $(O)
 endif
 
 all: ;
@@ -23,4 +23,4 @@ mkdir-install:
 driver: $(D:%=$(O)/libledmtx_%.o)
 
 $(O)/%.o: %.S
-	$(AS) -c $(AFLAGS) -o $@ $<
+	$(AS) -c $(ASFLAGS) -o $@ $<
