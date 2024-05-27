@@ -3,7 +3,7 @@
 #include <ledmtx_font5x7.h>
 #include <signal.h>
 
-__CONFIG(__CONFIG1H, _OSC_HS_1H);
+__CONFIG(__CONFIG1H, _HS_OSC_1H);
 __CONFIG(__CONFIG2H, _WDT_OFF_2H);
 __CONFIG(__CONFIG4L, _LVP_OFF_4L);
 
