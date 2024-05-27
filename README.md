@@ -23,6 +23,17 @@ $ cd examples/
 $ make
 ````
 
+## Testing
+The test suite is based on LLVM's lit.  Besides the dependencies required to build libledmtx, running tests also requires:
+- llvm (provides `lit`)
+- SDCC
+- gpsim (The GNUPIC Simulator)
+
+Tests can be simply run as follows:
+```bash
+$ lit tests/
+```
+
 ## Installing
 To install the library files change to the directory where you extracted libledmtx and run `make install` providing the path to the installation directories as in
 ```bash
