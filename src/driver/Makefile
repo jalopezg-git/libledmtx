@@ -4,7 +4,10 @@ SRCDIR = ..
 SOURCES = libledmtx_r393c164.S Makefile
 
 ifdef O
-ASFLAGS += -I $(O)
+ASFLAGS += -I$(O)
+endif
+ifdef INCLUDEDIR
+ASFLAGS += -I$(INCLUDEDIR)
 endif
 
 all: ;

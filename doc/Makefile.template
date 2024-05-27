@@ -10,7 +10,7 @@ O = font5x7
 MODULES = 
 
 OBJECTS = $(DRIVER:%=libledmtx_%.o) $(O:%=$(LIBDIR)/libledmtx_%.o)
-LFLAGS = -mpic16 -p$(P18FXXX) -Wl-m -L$(LIBDIR) -l libledmtx_core.lib \
+LDFLAGS = -mpic16 -p$(P18FXXX) --use-non-free -Wl-m -L$(LIBDIR) -l libledmtx_core.lib \
   $(MODULES:%=-l libledmtx_%.lib)
 CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small --use-non-free -I$(INCLUDEDIR)
 
@@ -22,7 +22,7 @@ clean:
 	rm -f *~ *.asm *.cod *.hex *.lst *.map *.o
 
 target.hex: $(OBJECTS)
-	$(CC) $(LFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^
 
 $(DRIVER:%=libledmtx_%.o): $(DRIVER:%=ledmtx_%.inc)
 	(cd $(LIBDIR)/driver && $(MAKE) D=$(DRIVER) O=$(CURDIR) driver)
