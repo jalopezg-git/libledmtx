@@ -45,9 +45,9 @@ _ledmtx_perf_init:
 ;; optimize the ISR.
   setf		_ledmtx_perf_intrtimelimit+0
   setf		_ledmtx_perf_intrtimelimit+1
-  movf		_ledmtx_config_tmr0l, w, A
+  movff		_ledmtx_config_tmr0l, WREG
   subwf		_ledmtx_perf_intrtimelimit+0, f
-  movf		_ledmtx_config_tmr0h, w, A
+  movff		_ledmtx_config_tmr0h, WREG
   subwfb	_ledmtx_perf_intrtimelimit+1, f
   return
 
