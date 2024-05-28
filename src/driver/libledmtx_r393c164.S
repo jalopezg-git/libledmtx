@@ -39,11 +39,10 @@ _ledmtx_driver_row	res	1
 ;; Output the 1's complement of `register<bit>` to the LEDMTX_R393C164_CDAT pin,
 ;; after which the LEDMTX_R393C164_CCLK pin is pulsed.
 OUTBIT	macro	register, bit
-  bcf	LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_CDAT, A	; set CDAT to `~register<bit>`
-  btfss register, bit, A
+  andwf	LEDMTX_R393C164_IOPORT, f, A			; set both `CDAT` and `CCLK` to 0
+  btfss	register, bit, A				; `CDAT = ~register<bit>`
   bsf	LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_CDAT, A	;        _
-  bsf	LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_CCLK, A	; CCLK _| |_
-  bcf	LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_CCLK, A
+  bsf	LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_CCLK, A	; CCLK _|
   endm
 
   code
@@ -64,20 +63,23 @@ _ledmtx_driver_vertrefresh:
   movf		PRODH, w, A
   addwfc	FSR0H, f, A
   movf		POSTDEC0, f, A			;          - 1
-  movf		_ledmtx_config_stride, w, A	; WREG = _ledmtx_config_stride
+  movff		_ledmtx_config_stride, PRODL	; PRODL = _ledmtx_config_stride
 
 ;; Disable row selection temporarily, to avoid glitches while data is shifted out
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RENA, A
 
+; TODO: control flow may be simplified using `movf` + `bz`, but test fails for some reason
   tstfsz	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == 0)
   bra		@vertrefresh_rclk
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	        _
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	 RRST _| |_
-  bra		@vertrefresh_loop
+  bra		@vertrefresh_loop_prologue
 @vertrefresh_rclk:
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	;        _
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	; RCLK _| |_
 
+@vertrefresh_loop_prologue:
+  movlw		~((1 << LEDMTX_R393C164_CDAT) | (1 << LEDMTX_R393C164_CCLK))	; Setup mask used in OUTBIT
 @vertrefresh_loop:				; `do {`
   OUTBIT	INDF0, 0			; 	shift out *(FSR0)
   OUTBIT	INDF0, 1
@@ -87,7 +89,7 @@ _ledmtx_driver_vertrefresh:
   OUTBIT	INDF0, 5
   OUTBIT	INDF0, 6
   OUTBIT	POSTDEC0, 7
-  decfsz	WREG, w, A			; `} while (--WREG != 0)`
+  decfsz	PRODL, f, A			; `} while (--PRODL != 0)`
   bra		@vertrefresh_loop
 
 ;; Re-enable row selection
