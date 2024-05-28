@@ -32,9 +32,9 @@ _ledmtx_framebuffer	res 28	; unused, but required to link
 ;; void main(void)
 _main:
   movlw		0xAA
-  movwf		_ledmtx_config_tmr0h, a
+  movff		WREG, _ledmtx_config_tmr0h
   movlw		0xBB
-  movwf		_ledmtx_config_tmr0l, a
+  movff		WREG, _ledmtx_config_tmr0l
 
 ; COM: FIXME: cannot check _ledmtx_perf_tmr0+1 == 0xAA (missing symbol)
 ; CHECK: _ledmtx_perf_tmr0 = 0xbb

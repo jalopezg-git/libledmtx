@@ -39,10 +39,10 @@ _ledmtx_perf_getintrtime:
 ;; at the beginning of the ISR; `_ledmtx_perf_tmr0` is set at the end before the
 ;; `retfie` instruction, thus return (_ledmtx_perf_tmr0
 ;;	- _ledmtx_config_tmr0h:_ledmtx_config_tmr0l)
-  movf		_ledmtx_config_tmr0l, w, A
+  movff		_ledmtx_config_tmr0l, WREG
   subwf		_ledmtx_perf_tmr0+0, w
   movwf		POSTDEC1, A
-  movf		_ledmtx_config_tmr0h, w, A
+  movff		_ledmtx_config_tmr0h, WREG
   subwfb	_ledmtx_perf_tmr0+1, w
   movwf		PRODL, A
   movf		PREINC1, w, A

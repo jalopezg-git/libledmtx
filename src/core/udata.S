@@ -39,6 +39,10 @@ _ledmtx_font_mask	res 1	; The bitmask of a character
 _ledmtx_config_width	res 1	; The width of the framebuffer (pixels)
 _ledmtx_config_height	res 1	; The height of the framebuffer (pixels)
 _ledmtx_config_stride	res 1	; The length of a scanline (bytes)
+
+; These are not required to be in the Access RAM as they are always accessed
+; using `movff`.
+.udata_ledmtx		udata
 _ledmtx_config_tmr0h	res 1	; The value that is preloaded in TMR0H
 _ledmtx_config_tmr0l	res 1	; The value that is preloaded in TMR0L
 _ledmtx_config_t0con	res 1	; The T0CON that was used in the call to `ledmtx_init()`

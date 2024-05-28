@@ -31,9 +31,9 @@ _ledmtx_framebuffer	res 28	; unused, but required to link
 ;; void main(void)
 _main:
   movlw		0xAA
-  movwf		_ledmtx_config_tmr0h, a
+  movff		WREG, _ledmtx_config_tmr0h
   movlw		0xBB
-  movwf		_ledmtx_config_tmr0l, a
+  movff		WREG, _ledmtx_config_tmr0l
   banksel	_ledmtx_perf_tmr0
   movlw		0xDD
   movwf		_ledmtx_perf_tmr0+1
