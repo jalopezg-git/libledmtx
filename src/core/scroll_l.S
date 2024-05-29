@@ -76,17 +76,15 @@ _ledmtx_scroll_l:
 @scroll_l_loop:
   movff		r0x00, PRODH		; PRODH = (w >> 3)
   bcf		STATUS, C, A
-  clrf		WREG, A
 
 @scroll_l_shift:			; `for (; PRODH !=0; --PRODH) {`
-  rlcf		PLUSW0, f, A		; *(FSR0 + WREG) = *(FSR0 + WREG) << 1
-  decfsz	WREG, w, A		; `decf` affects Carry bit; `decfsz` does not
-  ; nop
+  rlcf		POSTDEC0, f, A		; *(FSR0--) = *(FSR0) << 1
   decfsz	PRODH, f, A
   bra		@scroll_l_shift		; `}`
 
-;;; FSR0 += _ledmtx_config_stride
+;;; FSR0 += _ledmtx_config_stride + r0x00
   movf		_ledmtx_config_stride, w, A
+  addwf		r0x00, w, A
   addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A
