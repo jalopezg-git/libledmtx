@@ -4,8 +4,17 @@
 ; RUN: %gplink %GPLINKFLAGS -o %t.hex %t.o %t.drv.o %ledmtx_src_dir/core/libledmtx_core.lib \
 ; RUN: 		crt0i.o libdev18f452.lib
 ; RUN: echo -e 'break w (rcon & 0x04) == 0x00\n \
-; RUN:          run\n trace 4096\n \
+; RUN:          break w (porta & 0x02) == 0x02\n \
+; RUN:          run\n run\n run\n trace 4096\n \
 ; RUN:          quit\n' | %gpsim --cli --processor=p18f452 %t.hex | FileCheck %s
+
+;; COM: Apparently, this test triggers a bug in gpsim; the effect of
+;; COM: ```
+;; COM: bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A
+;; COM: ```
+;; COM: is not normally visible in the trace.  However, setting a breakpoint
+;; COM: (see `break w (porta & 0x02) == 0x02` above) seems to workaround the
+;; COM: issue.  This seems to be a real bug :-/
 
   radix dec
 
@@ -46,6 +55,7 @@ _main:
 ;; COM: during a complete refresh cycle.
 
 ; CHECK:   Wrote: 0x00{{.}}2 to porta(0x0F80)
+; CHECK:   BREAK:
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
