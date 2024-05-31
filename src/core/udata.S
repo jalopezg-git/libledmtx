@@ -20,6 +20,8 @@
 
   radix dec
 
+  include <ledmtx_config.h>
+
   global _ledmtx_font
   global _ledmtx_font_sz_w
   global _ledmtx_font_sz_h
@@ -30,6 +32,10 @@
   global _ledmtx_config_tmr0h
   global _ledmtx_config_tmr0l
   global _ledmtx_config_t0con
+#if (LEDMTX_HAVE_DOUBLE_BUFFER == 1)
+  global _ledmtx_frontbuffer
+  global _ledmtx_backbuffer
+#endif
 
 .udata_acs_ledmtx	udata_acs
 _ledmtx_font		res 3	; The address in program memory of the current font
@@ -46,5 +52,9 @@ _ledmtx_config_stride	res 1	; The length of a scanline (bytes)
 _ledmtx_config_tmr0h	res 1	; The value that is preloaded in TMR0H
 _ledmtx_config_tmr0l	res 1	; The value that is preloaded in TMR0L
 _ledmtx_config_t0con	res 1	; The T0CON that was used in the call to `ledmtx_init()`
+#if (LEDMTX_HAVE_DOUBLE_BUFFER == 1)
+_ledmtx_frontbuffer	res 2	; A __data pointer to the frontbuffer
+_ledmtx_backbuffer	res 2	; A __data pointer to the backbuffer
+#endif
 
   end

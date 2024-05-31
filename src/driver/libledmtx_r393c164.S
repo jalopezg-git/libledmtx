@@ -21,13 +21,13 @@
   radix dec
 
   include <ledmtx_config.h>
+  include <ledmtx_load_bufaddr.inc>
   include _P18FXXX_INC
   include <ledmtx_r393c164.inc>
 
   ; udata
   extern _ledmtx_config_stride
   extern _ledmtx_config_height
-  extern _ledmtx_framebuffer
 
   global _ledmtx_driver_row
   global _ledmtx_driver_init
@@ -55,7 +55,7 @@ _ledmtx_driver_init:
 ;; the next row.  This is usually called as part of a timer ISR.
 _ledmtx_driver_vertrefresh:
 ;; Compute the framebuffer address of the start of the next row
-  lfsr		0, _ledmtx_framebuffer		; FSR0 = _ledmtx_framebuffer
+  LOAD_BUFADDR_IN_FSR0	_ledmtx_frontbuffer	; FSR0 = _ledmtx_frontbuffer
   incf		_ledmtx_driver_row, w, A	;          + (_ledmtx_driver_row + 1) * _ledmtx_config_stride
   mulwf		_ledmtx_config_stride, A
   movf		PRODL, w, A
