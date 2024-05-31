@@ -23,6 +23,18 @@ $ cd examples/
 $ make
 ````
 
+### Optional features
+
+#### Double buffer
+libledmtx can be optionally built to support double buffer configuration.  To do so, you can invoke `make` as follows:
+```bash
+$ make ENABLE_DOUBLE_BUFFER=1
+```
+Note that, in a double-buffer build, both the frontbuffer and backbuffer point to the same buffer by default.  See [`ledmtx_setbackbuffer()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h#L181) for details.
+
+The feature is disabled by default.  Enabling it uses +4 additional bytes of RAM and makes each library function that touches a buffer +2 cycles slower, including the driver's vertical refresh routine.
+This is, in general, acceptable for most applications though.
+
 ## Testing
 The test suite is based on LLVM's lit.  Besides the dependencies required to build libledmtx, running tests also requires:
 - llvm (provides `lit`)
@@ -68,7 +80,10 @@ libledmtx offers a [core](https://github.com/jalopezg-git/libledmtx/blob/master/
 - `scrollstr`: helper for character string scroll.  Allows automatic scroll of up to 8 strings from the ISR (see [`ledmtx_scrollstr_start()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_scrollstr.h)).
 - `perf`: measures time taken to service the libledmtx interrupt.
 
-As of april 2024, there are plans to enable libledmtx to work with multiple buffers, e.g. to implement double buffering.
+As of june 2024, libledmtx can work with multiple buffers (experimental).  In this configuration, the driver reads from the frontbuffer, whereas the framebuffer manipulation routines act on the backbuffer.  Once the backbuffer is ready, buffers can be swapped by using `ledmtx_swapbuffers()`.
+In this case, buffers are pointed to by `ledmtx_frontbuffer` and `ledmtx_backbuffer`.  Given the additional level of indirection, all routines that need to load buffer addresses had the `lfsr` instruction replaced by two `movff` instructions, making them two cycles slower.  This overhead is, in general, acceptable for most of the purposes.
+
+The addition of this feature also allows for changing the viewport, i.e. having a framebuffer larger than the actual display and only making part of it visible (TBD).
 
 ## Issues / limits
 core:
