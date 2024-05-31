@@ -11,9 +11,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../../test_case_prologue.inc"
 
-  extern _ledmtx_config_tmr0h
-  extern _ledmtx_config_tmr0l
   extern _ledmtx_perf_tmr0
   extern _ledmtx_perf_getintrtime
 
@@ -30,10 +29,8 @@ _ledmtx_framebuffer	res 28	; unused, but required to link
   code
 ;; void main(void)
 _main:
-  movlw		0xAA
-  movff		WREG, _ledmtx_config_tmr0h
-  movlw		0xBB
-  movff		WREG, _ledmtx_config_tmr0l
+  TEST_CASE_PROLOGUE		32, 7
+
   banksel	_ledmtx_perf_tmr0
   movlw		0xDD
   movwf		_ledmtx_perf_tmr0+1

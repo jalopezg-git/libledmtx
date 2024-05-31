@@ -9,8 +9,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../test_case_prologue.inc"
 
-  extern _ledmtx_config_stride
   extern _ledmtx_putpixel
 
   global _ledmtx_framebuffer
@@ -30,8 +30,7 @@ _ledmtx_framebuffer	db 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55
   code
 ;; void main(void)
 _main:
-  movlw		4
-  movwf		_ledmtx_config_stride, a
+  TEST_CASE_PROLOGUE		32, 7
 
   movlw		1 		; val
   movwf		POSTDEC1, a

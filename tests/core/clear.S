@@ -9,9 +9,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../test_case_prologue.inc"
 
-  extern _ledmtx_config_stride
-  extern _ledmtx_config_height
   extern _ledmtx_clear
 
   global _ledmtx_framebuffer
@@ -31,10 +30,7 @@ _ledmtx_framebuffer	db 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55
   code
 ;; void main(void)
 _main:
-  movlw		4
-  movwf		_ledmtx_config_stride, a
-  movlw		7
-  movwf		_ledmtx_config_height, a
+  TEST_CASE_PROLOGUE		32, 7
 
 ; CHECK: 0400:  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ; CHECK: 0410:  00 00 00 00 00 00 00 00 00 00 00 00
