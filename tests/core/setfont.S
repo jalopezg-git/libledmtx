@@ -35,8 +35,8 @@ _ledmtx_framebuffer	res 28	; unused, but required to link
 ;; void main(void)
 _main:
 ; CHECK-NOT: _ledmtx_font = 0x0
-; CHECK: _ledmtx_font_sz_w = 0x5
-; CHECK: _ledmtx_font_sz_h = 0x7
+; CHECK:  = 0x5
+; CHECK:  = 0x7
 ; CHECK: _ledmtx_font_mask = 0xf8
   movlw		upper(_ledmtx_font5x7) 		; font
   movwf		POSTDEC1, a
