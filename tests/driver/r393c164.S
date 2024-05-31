@@ -11,9 +11,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../test_case_prologue.inc"
 
-  extern _ledmtx_config_stride
-  extern _ledmtx_config_height
   extern _ledmtx_driver_init
   extern _ledmtx_driver_vertrefresh
 
@@ -34,15 +33,13 @@ _ledmtx_framebuffer	db 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77
   code
 ;; void main(void)
 _main:
+  TEST_CASE_PROLOGUE		32, 7
+
   movlw		0xC0
   movwf		TRISA, a
   movlw		0X0F
   movwf		ADCON1, a
 
-  movlw		4
-  movwf		_ledmtx_config_stride, a
-  movlw		7
-  movwf		_ledmtx_config_height, a
   call		_ledmtx_driver_init
 
 ;; COM: Check output on I/O pins for each invoke to `_ledmtx_driver_vertrefresh`

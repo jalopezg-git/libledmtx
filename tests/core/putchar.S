@@ -11,13 +11,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../test_case_prologue.inc"
 
-  extern _ledmtx_config_stride
-  extern _ledmtx_font
-  extern _ledmtx_font_sz_w
-  extern _ledmtx_font_sz_h
-  extern _ledmtx_font_mask
-  extern _ledmtx_font5x7
   extern _ledmtx_putchar
 
   global _ledmtx_framebuffer
@@ -107,20 +102,8 @@ _test_putchar_ior:
 
 ;; void main(void)
 _main:
-  movlw		4
-  movwf		_ledmtx_config_stride, a
-  movlw		low(_ledmtx_font5x7)
-  movwf		_ledmtx_font+0, a
-  movlw		high(_ledmtx_font5x7)
-  movwf		_ledmtx_font+1, a
-  movlw		upper(_ledmtx_font5x7)
-  movwf		_ledmtx_font+2, a
-  movlw		5
-  movwf		_ledmtx_font_sz_w, a
-  movlw		7
-  movwf		_ledmtx_font_sz_h, a
-  movlw		0xf8
-  movwf		_ledmtx_font_mask, a
+  TEST_CASE_PROLOGUE		32, 7
+  USE_DEFAULT_FONT
 
 ; COM: * _ _ _ * _ _ _ * _ _ _ _ _ * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 ; COM: * _ _ _ * _ _ _ _ _ _ _ _ _ * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 

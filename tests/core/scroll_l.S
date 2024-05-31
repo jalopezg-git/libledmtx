@@ -10,8 +10,8 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include "../test_case_prologue.inc"
 
-  extern _ledmtx_config_stride
   extern _ledmtx_scroll_l
 
   global _ledmtx_framebuffer
@@ -67,8 +67,7 @@ _test_scroll_l_unaligned:
 
 ;; void main(void)
 _main:
-  movlw		4
-  movwf		_ledmtx_config_stride, a
+  TEST_CASE_PROLOGUE		32, 7
 
 ; CHECK: 0400:  aa 55 aa 55 aa aa aa 55 aa aa aa 55 aa aa aa 55
 ; CHECK: 0410:  aa aa aa 55 aa 55 aa 55 aa 55 aa 55
