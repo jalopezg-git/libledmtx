@@ -21,19 +21,19 @@
   radix dec
 
   include <ledmtx_config.h>
+  include <ledmtx_load_bufaddr.inc>
   include _P18FXXX_INC
 
   ; udata
   extern _ledmtx_config_height
   extern _ledmtx_config_stride
-  extern _ledmtx_framebuffer
 
   global _ledmtx_clear
 
 	code
 ;; extern void ledmtx_clear(void)
 _ledmtx_clear:
-  lfsr		0, _ledmtx_framebuffer		; FSR0 points to _ledmtx_framebuffer
+  LOAD_BUFADDR_IN_FSR0	_ledmtx_backbuffer
   movf		_ledmtx_config_height, w, A	; PRODH:PRODL holds framebuffer size in bytes
   mulwf		_ledmtx_config_stride, A
 

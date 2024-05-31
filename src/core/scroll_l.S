@@ -21,11 +21,11 @@
   radix dec
 
   include <ledmtx_config.h>
+  include <ledmtx_load_bufaddr.inc>
   include _P18FXXX_INC
 
   ; udata
   extern _ledmtx_config_stride
-  extern _ledmtx_framebuffer
 
 .registers	udata_ovr	0x0000
 r0x00	res	1
@@ -58,7 +58,7 @@ _ledmtx_scroll_l:
 ;; in the first row
   addwf		PRODL, w, A		; WREG = r0x00 + PRODL - 1
   decf		WREG, w, A
-  lfsr		0, _ledmtx_framebuffer	; FSR0 = _ledmtx_framebuffer
+  LOAD_BUFADDR_IN_FSR0	_ledmtx_backbuffer	; FSR0 = _ledmtx_backbuffer
   addwf		FSR0L, f, A		;          + WREG
   btfsc		STATUS, C, A
   incf		FSR0H, f, A

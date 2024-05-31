@@ -21,11 +21,11 @@
   radix dec
 
   include <ledmtx_config.h>
+  include <ledmtx_load_bufaddr.inc>
   include _P18FXXX_INC
 
   ; udata
   extern _ledmtx_config_stride
-  extern _ledmtx_framebuffer
 
 .registers	udata_ovr	0x0000
 r0x00	res	1
@@ -49,7 +49,7 @@ _ledmtx_putpixel:
   andlw		0x1f
 
 ;; Compute framebuffer address of the byte to touch
-  lfsr		0, _ledmtx_framebuffer	; FSR0 = _ledmtx_framebuffer
+  LOAD_BUFADDR_IN_FSR0	_ledmtx_backbuffer	; FSR0 = _ledmtx_backbuffer
   addwf		FSR0L, f, A		;          + (x >> 3)
   btfsc		STATUS, C, A
   incf		FSR0H, f, A

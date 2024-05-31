@@ -22,6 +22,7 @@
 
   include <ledmtx_config.h>
   include _P18FXXX_INC
+  include <ledmtx_load_bufaddr.inc>
 
   ; udata
   extern _ledmtx_config_width
@@ -64,6 +65,16 @@ _ledmtx_init:
   movff	PLUSW1, _ledmtx_config_tmr0l
   movlw	6
   movff	PLUSW1, _ledmtx_config_t0con
+
+;; Initialize `_ledmtx_(front|back)buffer` to point to _ledmtx_framebuffer
+#if (LEDMTX_HAVE_DOUBLE_BUFFER == 1)
+  movlw	low(_ledmtx_framebuffer)
+  movff	WREG, _ledmtx_frontbuffer+0
+  movff	WREG, _ledmtx_backbuffer+0
+  movlw	high(_ledmtx_framebuffer)
+  movff	WREG, _ledmtx_frontbuffer+1
+  movff	WREG, _ledmtx_backbuffer+1
+#endif
 
 ;; Initialize driver and modules
   call	_ledmtx_driver_init
