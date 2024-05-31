@@ -60,6 +60,9 @@ extern char ledmtx_config_t0con;
 #define LEDMTX_FRAMEBUFFER_RES(size) \
   unsigned char ledmtx_framebuffer[size];
 
+extern __data unsigned char *ledmtx_frontbuffer; /// A pointer to the frontbuffer
+extern __data unsigned char *ledmtx_backbuffer;  /// A pointer to the backbuffer
+
 /// Prologue for the ISR of a timer interrupt (usually Timer0).  Such ISR is
 /// responsible for carrying out the display vertical refresh.
 #define LEDMTX_BEGIN_ISR                              \
@@ -118,7 +121,13 @@ extern unsigned char ledmtx_font_sz_w; /// Width of the current font (pixels)
 extern unsigned char ledmtx_font_sz_h; /// Height of the current font (pixels)
 extern unsigned char ledmtx_font_mask; /// The character mask
 
-/// Initialize the library and setup the display driver
+/// \brief  Initialize the library and setup the display driver.
+/// In a double buffer build, `ledmtx_(front|back)buffer` shall be initialized
+/// to point to `ledmtx_framebuffer` by default.  This makes it possible to use
+/// a double-buffer build without any changes to user code.
+/// The user is responsible for calling `ledmtx_setbackbuffer()` to set an
+/// alternative buffer.
+///
 /// \param flags A combination of one or more `LEDMTX_INIT_xxx` constants
 /// \param width The width of the framebuffer in pixels
 /// \param height The height of the framebuffer in pixels
