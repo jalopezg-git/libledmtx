@@ -9,7 +9,7 @@ clean:
 	rm -f *~ $(AUTOGEN)
 
 install: all mkdir-install
-	cp *.h $(INCLUDEDIR)
+	cp *.h *.inc $(INCLUDEDIR)
 
 mkdir-install:
 	[ -d $(INCLUDEDIR) ] || mkdir -p $(INCLUDEDIR)
