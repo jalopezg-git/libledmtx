@@ -31,6 +31,7 @@ TEST_CASE_PROLOGUE	macro fb_width, fb_height
   movlw	high(_ledmtx_framebuffer)
   movff	WREG, _ledmtx_frontbuffer+1
   movff	WREG, _ledmtx_backbuffer+1
+  bsf		RCON, POR, A
 #endif
 
   movlw		0xAA
