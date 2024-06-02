@@ -27,4 +27,14 @@ LOAD_BUFADDR_IN_FSR0	macro	buffer
 #endif
   endm
 
+;; RCON<POR> is typically used to signal a Power-on Reset.  Once the device has
+;; booted it is most likely useless.  Reuse it to indicate 'do-swapbuffers-on-vsync'.
+CLEAR_SWAPBUFFERS_ON_VSYNC	macro
+  bsf		RCON, POR, A
+  endm
+
+SET_SWAPBUFFERS_ON_VSYNC	macro
+  bcf		RCON, POR, A
+  endm
+
 #endif

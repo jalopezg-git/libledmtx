@@ -2,6 +2,9 @@ include ../make.mk
 
 SRCDIR = ..
 OBJECTS = clear.o init.o putchar.o putpixel.o putstr.o scroll_l.o scroll_r.o setfont.o udata.o
+ifeq ($(ENABLE_DOUBLE_BUFFER), 1)
+OBJECTS += setbackbuffer.o swapbuffers.o
+endif
 
 all: libledmtx_core.lib
 
