@@ -1,7 +1,7 @@
 /*
  * ledmtx_core.h - libledmtx core header
  *
- * Copyright (C) 2011, 2023  Javier Lopez-Gomez
+ * Copyright (C) 2011-2024  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -59,6 +59,11 @@ extern char ledmtx_config_t0con;
 /// Declare a framebuffer of size `size` (in bytes)
 #define LEDMTX_FRAMEBUFFER_RES(size) \
   unsigned char ledmtx_framebuffer[size];
+
+/// Declare `_name` as backing storage for the backbuffer.  Typically, this is
+/// combined with a call to `ledmtx_setbackbuffer(_name)` somewhere else.
+#define LEDMTX_DECLARE_BACKBUFFER(_name) \
+  unsigned char _name[sizeof(ledmtx_framebuffer)];
 
 extern __data unsigned char *ledmtx_frontbuffer; /// A pointer to the frontbuffer
 extern __data unsigned char *ledmtx_backbuffer;  /// A pointer to the backbuffer
@@ -171,5 +176,35 @@ extern void ledmtx_scroll_l(unsigned char x, unsigned char y, unsigned char w, u
 /// Scroll right a region of size w X h, located at (x, y).  `x` and `w` should
 /// be a multiple of 8
 extern void ledmtx_scroll_r(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
+
+/// On a build that supports double buffer, set the address of the backbuffer, i.e.
+/// the buffer written to by most other operations, e.g. by `ledmtx_putchar()`.
+/// Once the backbuffer is done, `ledmtx_swapbuffers()` can be called to swap the
+/// front and the back buffer.
+///
+/// \param buf Address of the backbuffer
+extern void ledmtx_setbackbuffer(__data unsigned char *buf);
+
+/// Queue a swap of front and back buffers on the next vertical sync
+extern void ledmtx_swapbuffers_on_vsync(void);
+
+/// Immediately swap the front and the backbuffer.  If a swap was queued on vsync,
+/// it is cancelled.  The user is responsible for clearing the acquired backbuffer
+/// before calling any other routine on it.
+/// Interrupts are temporarily disabled given that another call to `ledmtx_swapbuffers()`
+/// may happen from ISR.
+extern void ledmtx_swapbuffers(void);
+
+/// Conditionally swap front and back buffers if the action was previously queued
+/// via `ledmtx_swapbuffers_on_vsync()`.  This is intended to be placed in the
+/// R0 section of ISR, i.e.
+/// ```
+/// LEDMTX_BEGIN_R0
+///   ledmtx_swapbuffers_if_queued();
+/// LEDMTX_END_R0
+/// ```
+#define ledmtx_swapbuffers_if_queued()		 \
+  __asm btfss _RCON, 1, 0 __endasm; /* POR, A */ \
+  __asm call _ledmtx_swapbuffers __endasm;
 
 #endif

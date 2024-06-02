@@ -74,6 +74,7 @@ _ledmtx_init:
   movlw	high(_ledmtx_framebuffer)
   movff	WREG, _ledmtx_frontbuffer+1
   movff	WREG, _ledmtx_backbuffer+1
+  CLEAR_SWAPBUFFERS_ON_VSYNC
 #endif
 
 ;; Initialize driver and modules
