@@ -5,6 +5,9 @@ OBJECTS = clear.o init.o putchar.o putpixel.o putstr.o scroll_l.o scroll_r.o set
 ifeq ($(ENABLE_DOUBLE_BUFFER), 1)
 OBJECTS += setbackbuffer.o swapbuffers.o
 endif
+ifeq ($(ENABLE_VIEWPORT), 1)
+OBJECTS += setviewport.o
+endif
 
 all: libledmtx_core.lib
 

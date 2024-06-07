@@ -77,6 +77,15 @@ _ledmtx_init:
   CLEAR_SWAPBUFFERS_ON_VSYNC
 #endif
 
+;; Initialize viewport to `<_ledmtx_config_stride> X <_ledmtx_config_height>` at (0,0)
+#if (LEDMTX_HAVE_VIEWPORT == 1)
+  movlw	0
+  movwf	_ledmtx_viewport_xoff, A
+  movwf	_ledmtx_viewport_y, A
+  movff	_ledmtx_config_stride, _ledmtx_viewport_stride
+  movff	_ledmtx_config_height, _ledmtx_viewport_height
+#endif
+
 ;; Initialize driver and modules
   call	_ledmtx_driver_init
   call	_ledmtx_modules_init
