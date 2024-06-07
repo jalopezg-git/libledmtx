@@ -61,13 +61,8 @@ _ledmtx_driver_vertrefresh:
 ;; Disable row selection temporarily, to avoid glitches while data is shifted out
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RENA, A
 
-; TODO: control flow may be simplified using `movf` + `bz`, but test fails for some reason
-  tstfsz	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == 0)
-  bra		@vertrefresh_rclk
-  bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	        _
-  bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	 RRST _| |_
-  bra		@vertrefresh_loop_prologue
-@vertrefresh_rclk:
+  movf		_ledmtx_driver_row, w, A
+  bz		@vertrefresh_rrst		; if (_ledmtx_driver_row == 0)
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	;        _
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	; RCLK _| |_
 
@@ -93,5 +88,10 @@ _ledmtx_driver_vertrefresh:
   cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == _ledmtx_viewport_height)
   clrf		_ledmtx_driver_row, A		; 	_ledmtx_driver_row = 0
   return
+
+@vertrefresh_rrst:
+  bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	        _
+  bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	 RRST _| |_
+  bra		@vertrefresh_loop_prologue
 
   end
