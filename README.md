@@ -37,7 +37,7 @@ Note that, in a double-buffer build, both the frontbuffer and backbuffer point t
 The feature is disabled by default.  Enabling it uses +4 additional bytes of RAM and makes each library function that touches a buffer +2 cycles slower, including the driver's vertical refresh routine.
 This is, in general, acceptable for most applications though.
 
-### User-defined viewport
+#### User-defined viewport
 Set `ENABLE_VIEWPORT=1` to build a viewport-aware version of libledmtx, i.e. enable support for having a framebuffer larger than the physical display.
 In this case, `libledmtx_init()` sets both, the framebuffer and initial viewport geometry.  The visible rectangle can be set as many times as needed via [`ledmtx_setviewport()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h#L147).
 
