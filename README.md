@@ -24,16 +24,24 @@ $ make
 ````
 
 ### Optional features
+Additional features can be enabled / disabled by appending a list of `ENABLE_xxx=(0|1)` to the make command line, e.g. to build libledmtx with support for double buffer
 
-#### Double buffer
-libledmtx can be optionally built to support double buffer configuration.  To do so, you can invoke `make` as follows:
 ```bash
 $ make ENABLE_DOUBLE_BUFFER=1
 ```
-Note that, in a double-buffer build, both the frontbuffer and backbuffer point to the same buffer by default.  See [`ledmtx_setbackbuffer()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h#L181) for details.
+
+#### Double buffer
+libledmtx can be optionally built to support double buffer configuration.  To do so, you can append `ENABLE_DOUBLE_BUFFER=1` to the make command line.
+Note that, in a double-buffer build, both the frontbuffer and backbuffer point to the same buffer by default.  See [`ledmtx_setbackbuffer()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h#L191) for details.
 
 The feature is disabled by default.  Enabling it uses +4 additional bytes of RAM and makes each library function that touches a buffer +2 cycles slower, including the driver's vertical refresh routine.
 This is, in general, acceptable for most applications though.
+
+### User-defined viewport
+Set `ENABLE_VIEWPORT=1` to build a viewport-aware version of libledmtx, i.e. enable support for having a framebuffer larger than the physical display.
+In this case, `libledmtx_init()` sets both, the framebuffer and initial viewport geometry.  The visible rectangle can be set as many times as needed via [`ledmtx_setviewport()`](https://github.com/jalopezg-git/libledmtx/blob/master/include/ledmtx_core.h#L147).
+
+This feature is disabled by default.  When enabled, it uses +4 additional bytes of RAM in the access bank and makes the driver vertical refresh routine slightly slower (~5 cycles).
 
 ## Testing
 The test suite is based on LLVM's lit.  Besides the dependencies required to build libledmtx, running tests also requires:
