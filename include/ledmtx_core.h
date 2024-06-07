@@ -144,6 +144,17 @@ extern unsigned char ledmtx_font_mask; /// The character mask
 extern void ledmtx_init(unsigned char flags, unsigned char width, unsigned char height,
                         unsigned char tmr0h, unsigned char tmr0l, unsigned char t0con) __wparam;
 
+/// \brief  Set the viewport, i.e. the rectangle of pixels visible on the physical device.
+/// This enables the allocation of framebuffer larger than the actual display.  The initial
+/// viewport set by `ledmtx_init()` matches the geometry of the framebuffer.
+/// \param x The (x) coordinate; should be a multiple of 8.
+/// \param y The (y) coordinate
+/// \param width The width of the visible area; should be a multiple of 8.
+/// \param height The height of the visible area
+/// \return 1 on success; 0 otherwise
+extern char ledmtx_setviewport(unsigned char x, unsigned char y,
+                               unsigned char width, unsigned char height);
+
 /// Clear the framebuffer
 extern void ledmtx_clear(void);
 
