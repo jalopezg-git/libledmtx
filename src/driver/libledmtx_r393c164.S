@@ -56,14 +56,7 @@ _ledmtx_driver_init:
 _ledmtx_driver_vertrefresh:
 ;; Compute the framebuffer address of the start of the next row
   LOAD_BUFADDR_IN_FSR0	_ledmtx_frontbuffer	; FSR0 = _ledmtx_frontbuffer
-  incf		_ledmtx_driver_row, w, A	;          + (_ledmtx_driver_row + 1) * _ledmtx_config_stride
-  mulwf		_ledmtx_config_stride, A
-  movf		PRODL, w, A
-  addwf		FSR0L, f, A
-  movf		PRODH, w, A
-  addwfc	FSR0H, f, A
-  movf		POSTDEC0, f, A			;          - 1
-  movff		_ledmtx_config_stride, PRODL	; PRODL = _ledmtx_config_stride
+  AT_END_OF_VIEWPORT_ROW	_ledmtx_driver_row
 
 ;; Disable row selection temporarily, to avoid glitches while data is shifted out
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RENA, A
@@ -96,8 +89,8 @@ _ledmtx_driver_vertrefresh:
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RENA, A
 
   incf		_ledmtx_driver_row, f, A	; _ledmtx_driver_row++
-  movf		_ledmtx_config_height, w, A
-  cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == _ledmtx_config_height)
+  movf		_ledmtx_viewport_height, w, A
+  cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == _ledmtx_viewport_height)
   clrf		_ledmtx_driver_row, A		; 	_ledmtx_driver_row = 0
   return
 
