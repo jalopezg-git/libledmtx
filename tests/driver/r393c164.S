@@ -4,17 +4,20 @@
 ; RUN: %gplink %GPLINKFLAGS -o %t.hex %t.o %t.drv.o %ledmtx_src_dir/core/libledmtx_core.lib \
 ; RUN: 		crt0i.o libdev18f452.lib
 ; RUN: echo -e 'break w (rcon & 0x04) == 0x00\n \
-; RUN:          break w (porta & 0x02) == 0x02\n \
-; RUN:          run\n run\n run\n trace 4096\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
+; RUN:          run\n trace 512\n \
 ; RUN:          quit\n' | %gpsim --cli --processor=p18f452 %t.hex | FileCheck %s
 
-;; COM: Apparently, this test triggers a bug in gpsim; the effect of
-;; COM: ```
-;; COM: bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A
-;; COM: ```
-;; COM: is not normally visible in the trace.  However, setting a breakpoint
-;; COM: (see `break w (porta & 0x02) == 0x02` above) seems to workaround the
-;; COM: issue.  This seems to be a real bug :-/
+;; COM: gpsim's trace circular buffer has a hardcoded capacity of 4096 entries.
+;; COM: Taking into account that it traces _everything_ incl. register reads
+;; COM: / writes, it may overflows before execution ends.  Thus, trigger a
+;; COM: breakpoint and dump trace after each `_ledmtx_driver_vertrefresh` call.
 
   radix dec
 
@@ -55,7 +58,6 @@ _main:
 ;; COM: during a complete refresh cycle.
 
 ; CHECK:   Wrote: 0x00{{.}}2 to porta(0x0F80)
-; CHECK:   BREAK:
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
@@ -89,6 +91,7 @@ _main:
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -124,6 +127,7 @@ _main:
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -159,6 +163,7 @@ _main:
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -194,6 +199,7 @@ _main:
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -229,6 +235,7 @@ _main:
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -264,6 +271,7 @@ _main:
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}1 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -299,6 +307,7 @@ _main:
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
+  bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
 ; CHECK:   Wrote: 0x00{{.}}2 to porta(0x0F80)
 ; CHECK:   Wrote: 0x001{{.}} to porta(0x0F80)
@@ -334,8 +343,8 @@ _main:
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
 ; CHECK:   Wrote: 0x003{{.}} to porta(0x0F80)
   call		_ledmtx_driver_vertrefresh
-
   bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
+
   return
 
   end
