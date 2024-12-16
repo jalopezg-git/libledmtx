@@ -42,7 +42,7 @@ void main(void)
   ledmtx_setfont(ledmtx_font5x7);
   stdout = STREAM_USER;
   
-  printf ("hello\n");
+  printf ("bye\rhello\n");
   // COM: * _ _ _ _ _ _ _ _ _ _ _ _ * * _ _ _ _ * * _ _ _ _ _ _ _ _ _ _ _ 
   // COM: * _ _ _ _ _ _ _ _ _ _ _ _ _ * _ _ _ _ _ * _ _ _ _ _ _ _ _ _ _ _ 
   // COM: * _ * * _ _ _ * * * _ _ _ _ * _ _ _ _ _ * _ _ _ _ * * * _ _ _ _ 

@@ -42,17 +42,14 @@ _ledmtx_stdio_y		db	0
   code
 ;; extern void putchar(char c) __wparam
 _putchar:
-  movwf		PRODL, A		; if (c == '\n')
-  movlw		0x0a
-  cpfseq	PRODL, A
-  bra		@putchar_dump
-  banksel	_ledmtx_stdio_x		; 	_ledmtx_stdio_x = 0
-  clrf		_ledmtx_stdio_x
-  incf		_ledmtx_font_sz_h, w, A	; 	_ledmtx_stdio_y += (_ledmtx_font_sz_h + 1)
-  addwf		_ledmtx_stdio_y, f
-  return
+  movwf		PRODL, A
+  movlw		0x0a			; if (c == '\n')
+  xorwf		PRODL, w, A
+  bz		@putchar_newline
+  movlw		0x0d			; if (c == '\r')
+  xorwf		PRODL, w, A
+  bz		@putchar_carriageret
 
-@putchar_dump:
   movff		PRODL, POSTDEC1		; call `ledmtx_putchar()`
   movff		_ledmtx_stdio_y, POSTDEC1
   movff		_ledmtx_stdio_x, POSTDEC1
@@ -65,6 +62,15 @@ _putchar:
   incf		_ledmtx_font_sz_w, w, A	; _ledmtx_stdio_x += (_ledmtx_font_sz_w + 1)
   banksel	_ledmtx_stdio_x
   addwf		_ledmtx_stdio_x, f
+  return
+
+@putchar_newline:
+  incf		_ledmtx_font_sz_h, w, A	; 	_ledmtx_stdio_y += (_ledmtx_font_sz_h + 1)
+  banksel	_ledmtx_stdio_y
+  addwf		_ledmtx_stdio_y, f
+@putchar_carriageret:
+  banksel	_ledmtx_stdio_x		; 	_ledmtx_stdio_x = 0
+  clrf		_ledmtx_stdio_x
   return
 
   end
