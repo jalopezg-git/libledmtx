@@ -147,13 +147,17 @@ where $size = height * ceil(width / 8)$.
   }
 ```
 
-5. `ledmtx_init()` should be called on initialisation.  If you intend to use Timer0 to drive the display, you should compute proper values for the `TMR0H`, `TMR0L` and `T0CON` registers.
-The `ledmtx_tmr0config` tool included in the [support/](https://github.com/jalopezg-git/libledmtx/tree/master/support/) directory automates this task.
-Example:
+5. `ledmtx_init()` should be called before calling any other libledmtx function.
+If Timer0 is used to drive the display (recommended), proper values for the `tmr0h`, `tmr0l`, and `t0con` paramaters have to be passed.
+The `ledmtx_modegen` utility included in [support/](https://github.com/jalopezg-git/libledmtx/tree/master/support/) automates this task.
+If you are using the provided `Makefile.template`, `ledmtx_modegen_modes.h` shall be automatically generated from the provided values.  Because the `LEDMTX__DEFAULT_xxx` preprocessor macros are also defined in the abovementioned header, the call to `ledmtx_init()` may just become:
 ```c
-  // Initialize libledmtx for a 32x7 @ 50Hz display (assuming Fosc == 8MHz)
-  // The last three arguments were computed by `$ ledmtx_tmr0config 7 50 8000000`
-  ledmtx_init(LEDMTX_INIT_CLEAR | LEDMTX_INIT_TMR0, 32, 7, 0xe9, 0xae, 0x88)
+#include "ledmtx_modegen_modes.h"
+// ...
+
+ledmtx_init(LEDMTX_INIT_CLEAR | LEDMTX_INIT_TMR0,
+	    LEDMTX__DEFAULT_WIDTH, LEDMTX__DEFAULT_HEIGHT,
+	    LEDMTX__DEFAULT_TMR0H, LEDMTX__DEFAULT_TMR0L, LEDMTX__DEFAULT_T0CON);
 ```
 
 ## Contributing
