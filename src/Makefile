@@ -1,6 +1,5 @@
 include make.mk
 
-SRCDIR = .
 OBJECTS = libledmtx_stdio.o
 SUBDIRS = core driver font modules
 
