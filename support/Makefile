@@ -1,4 +1,4 @@
-SUBDIRS = ledmtx_tmr0config
+SUBDIRS = ledmtx_modegen
 
 all clean install:
 	list='$(SUBDIRS)'; for subdir in $$list; do \
