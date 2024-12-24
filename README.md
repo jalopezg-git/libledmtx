@@ -55,13 +55,9 @@ $ lit tests/
 ```
 
 ## Installing
-To install the library files change to the directory where you extracted libledmtx and run `make install` providing the path to the installation directories as in
+To install required files, change to the directory where you cloned libledmtx and run `make install` setting `INSTALL_PREFIX` to the destination directory, e.g.
 ```bash
-$ make LIBDIR=/path/to/lib INCLUDEDIR=/path/to/include BINDIR=/path/to/bin install
-```
-E.g.,
-```bash
-$ make LIBDIR=$HOME/libledmtx/lib INCLUDEDIR=$HOME/libledmtx/include BINDIR=$HOME/libledmtx/bin install
+$ make INSTALL_PREFIX=$HOME/.local/libledmtx/ install
 ```
 
 ## Hardware

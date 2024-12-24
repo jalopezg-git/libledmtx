@@ -1,5 +1,6 @@
-CFLAGS = -Wall -Wpedantic -O2 -std=c++20
+include $(SRCDIR)/make.mk
 
+CFLAGS = -Wall -Wpedantic -O2 -std=c++20
 OBJECTS = ledmtx_modegen.o
 
 all: ledmtx_modegen

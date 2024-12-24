@@ -1,9 +1,16 @@
 # Target device
 P18FXXX = 18f452
 
+ifdef INSTALL_PREFIX
+LIBDIR = $(INSTALL_PREFIX)/lib/
+INCLUDEDIR = $(INSTALL_PREFIX)/include/
+BINDIR = $(INSTALL_PREFIX)/bin/
+else
+INCLUDEDIR ?= $(SRCDIR)/../include
+endif
+
 GPLIB = gplib
 AS = gpasm
-INCLUDEDIR ?= $(SRCDIR)/../include
 ASFLAGS = -I$(SRCDIR) -I$(INCLUDEDIR) -p $(P18FXXX) -w 0
 
 # Optional features

@@ -6,9 +6,12 @@ P18FXXX = 18f452
 OSC_HZ = 8000000
 VIDEO_MODE_DESC = 32 7 7 50
 
-LIBDIR = 
-INCLUDEDIR = 
-BINDIR = 
+# Set `INSTALL_PREFIX` to actual libledmtx installation directory.
+INSTALL_PREFIX = /path/to/libledmtx_install.d/
+
+LIBDIR = $(INSTALL_PREFIX)/lib/
+INCLUDEDIR = $(INSTALL_PREFIX)/include/
+BINDIR = $(INSTALL_PREFIX)/bin/
 
 DRIVER = r393c164
 # Update list of libledmtx objects to link, if needed
