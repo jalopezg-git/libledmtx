@@ -1,6 +1,10 @@
 CC = sdcc
 P18FXXX = 18f452
 
+# 32x7 @ 50Hz (for uC OSC frequency = 8 MHz)
+OSC_HZ = 8000000
+VIDEO_MODE_DESC = 32 7 7 50
+
 SRCDIR = ../../src
 DRIVER = r393c164
 
@@ -11,10 +15,13 @@ CFLAGS = -mpic16 -p$(P18FXXX) --fomit-frame-pointer --pstack-model=small --use-n
 
 OBJECTS += scrollstr32x7.o
 
-all: scrollstr32x7.hex
+all: ledmtx_modegen_modes.h scrollstr32x7.hex
 
 clean:
-	rm -f *~ *.asm *.cod *.hex *.lst *.map *.o
+	rm -f *~ *.asm *.cod *.hex *.lst *.map *.o ledmtx_modegen_modes.h
+
+ledmtx_modegen_modes.h:
+	$(SRCDIR)/../support/ledmtx_modegen/ledmtx_modegen --osc-hz $(OSC_HZ) --default=0 $(VIDEO_MODE_DESC) > $@
 
 scrollstr32x7.hex: $(OBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $^
