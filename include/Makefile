@@ -19,4 +19,5 @@ ledmtx_config.h: ledmtx_config.h.in ../src/make.mk
 		_P18FXXX_INC="p$(P18FXXX).inc" \
 		LEDMTX_HAVE_DOUBLE_BUFFER="$(ENABLE_DOUBLE_BUFFER)" \
 		LEDMTX_HAVE_VIEWPORT="$(ENABLE_VIEWPORT)" \
+		LEDMTX_GITBRANCH="$(shell git describe --all)" \
 		LEDMTX_GITREVISION="$(shell git rev-parse HEAD)" envsubst < ledmtx_config.h.in > ledmtx_config.h
