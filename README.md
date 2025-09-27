@@ -61,7 +61,7 @@ $ make INSTALL_PREFIX=$HOME/.local/libledmtx/ install
 ```
 
 ## Hardware
-Refer to docs in the [hardware](https://github.com/jalopezg-git/libledmtx/tree/master/doc/hardware/) directory.
+Refer to docs and KiCad schematic design in the [hardware](https://github.com/jalopezg-git/libledmtx/tree/master/hardware/) directory.
 The r393c164 driver requires a `ledmtx_r393c164.inc` configuration file that specifies which I/O port and pins to use for each output signal.
 The used I/O port still should be manually configured writing to the `TRISx` / `ADCON1` registers.
 
