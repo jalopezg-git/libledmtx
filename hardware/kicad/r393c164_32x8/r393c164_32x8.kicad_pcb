@@ -7779,7 +7779,7 @@
 				)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 0 5.28 90)
 			(layer "F.Fab")
 			(uuid "f22123ce-89e2-4764-a349-bfd51b32e9db")
@@ -12403,7 +12403,7 @@
 				)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 0 5.28 90)
 			(layer "F.Fab")
 			(uuid "9ee4da37-4eb2-4d67-b94b-fc65502159cc")
@@ -13007,7 +13007,7 @@
 				)
 			)
 		)
-		(property "Value" "74LS393"
+		(property "Value" "74HC393"
 			(at 0 5.28 0)
 			(layer "F.Fab")
 			(uuid "14b1e3fc-33c0-40c2-b4bf-70bebaa56141")
@@ -14698,7 +14698,7 @@
 				)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 0 5.28 90)
 			(layer "F.Fab")
 			(uuid "f586b08b-e43a-47d4-9429-6e425cec9fad")
@@ -16392,7 +16392,7 @@
 				)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 0 5.28 90)
 			(layer "F.Fab")
 			(uuid "9c7fefd5-2921-4164-bd76-6d33f50bd436")
