@@ -3193,6 +3193,12 @@
 		(uuid "b295f7af-e488-4614-850c-e0ee75970d24")
 	)
 	(junction
+		(at 38.1 106.68)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bbea9f21-c10d-4de0-9e1f-d27f05a6b4b8")
+	)
+	(junction
 		(at 110.49 129.54)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3257,12 +3263,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e54649cf-58c2-4274-bc6d-96b2d4938325")
-	)
-	(junction
-		(at 38.1 105.41)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f451a429-51e7-47f8-8973-7baf79e1624c")
 	)
 	(junction
 		(at 120.65 114.3)
@@ -3586,7 +3586,7 @@
 	)
 	(wire
 		(pts
-			(xy 35.56 102.87) (xy 35.56 105.41)
+			(xy 35.56 102.87) (xy 35.56 106.68)
 		)
 		(stroke
 			(width 0)
@@ -4136,6 +4136,16 @@
 	)
 	(wire
 		(pts
+			(xy 38.1 95.25) (xy 38.1 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "401145c5-5807-4333-b166-5eeb7e6116e9")
+	)
+	(wire
+		(pts
 			(xy 120.65 104.14) (xy 132.08 104.14)
 		)
 		(stroke
@@ -4513,16 +4523,6 @@
 			(type default)
 		)
 		(uuid "55c5484d-d83c-4039-934a-22ec5617fdc5")
-	)
-	(wire
-		(pts
-			(xy 38.1 106.68) (xy 38.1 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5710fbc2-2765-45ef-ac99-c13290a9e2ac")
 	)
 	(wire
 		(pts
@@ -6436,7 +6436,7 @@
 	)
 	(wire
 		(pts
-			(xy 35.56 105.41) (xy 38.1 105.41)
+			(xy 35.56 106.68) (xy 38.1 106.68)
 		)
 		(stroke
 			(width 0)
@@ -7363,16 +7363,6 @@
 			(type default)
 		)
 		(uuid "f949b72d-7a35-4860-a78a-dd31ca09ace7")
-	)
-	(wire
-		(pts
-			(xy 38.1 95.25) (xy 38.1 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f98f669c-fc76-48a4-aa34-5284df08fb64")
 	)
 	(wire
 		(pts
@@ -9525,7 +9515,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 164.7033 116.84 0)
 			(effects
 				(font
@@ -9702,7 +9692,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 122.7933 116.84 0)
 			(effects
 				(font
@@ -10751,7 +10741,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 248.5233 116.84 0)
 			(effects
 				(font
@@ -11489,7 +11479,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "74LS393"
+		(property "Value" "74HC393"
 			(at 31.75 137.1599 90)
 			(effects
 				(font
@@ -11842,7 +11832,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "74LS393"
+		(property "Value" "74HC393"
 			(at 54.61 137.1599 90)
 			(effects
 				(font
@@ -12288,7 +12278,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74HC164"
+		(property "Value" "74HC164 / CD54ACT164"
 			(at 206.6133 116.84 0)
 			(effects
 				(font
@@ -13950,7 +13940,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74LS393"
+		(property "Value" "74HC393"
 			(at 74.93 137.1599 0)
 			(effects
 				(font
