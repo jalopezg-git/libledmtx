@@ -125,9 +125,9 @@ For the r393c164 driver, the file `ledmtx_r393c164.inc` (located in your project
 Header files for any module should be `#include`d before `ledmtx_core.h`.
 A framebuffer (i.e., a small data memory area that stores the current frame) should be declared as follows:
 ```c
-  LEDMTX_FRAMEBUFFER_RES(size)
+  LEDMTX_DECLARE_FRAMEBUFFER(_width, _height)
 ```
-where $size = height * ceil(width / 8)$.
+where `_width` and `_height` must be constant expressions.
 
 4. If you are using TMR0 interrupts to call the driver-specific routine for vertical refresh, you should also include the following code:
 ```c
