@@ -22,18 +22,32 @@
 #ifndef __LEDMTX_R0REG_TBLRD_H__
 #define __LEDMTX_R0REG_TBLRD_H__
 
-#define LEDMTX_R0_STORE_TBLRD               \
-  __asm movff _EECON1, _POSTDEC1 __endasm;  \
-  __asm movff _TBLPTRU, _POSTDEC1 __endasm; \
-  __asm movff _TBLPTRH, _POSTDEC1 __endasm; \
-  __asm movff _TBLPTRL, _POSTDEC1 __endasm; \
+#include <pic18fregs.h>
+
+#if defined(_WRTD_ON_6H) || defined(_WRTD_OFF_6H)
+// `_WRTD_(ON|OFF)_6H` PP macros being defined is a good indicator of EEPROM
+// presence; thus `_EECON1` is assumed to be declared.
+#define __LEDMTX_PUSH_EECON1 __asm movff _EECON1, _POSTDEC1 __endasm;
+#define __LEDMTX_POP_EECON1 __asm movff _PREINC1, _EECON1 __endasm;
+
+#else
+#define __LEDMTX_PUSH_EECON1
+#define __LEDMTX_POP_EECON1
+
+#endif /* defined(_WRTD_ON_6H) || defined(_WRTD_OFF_6H) */
+
+#define LEDMTX_R0_STORE_TBLRD                                                  \
+  __LEDMTX_PUSH_EECON1                                                         \
+  __asm movff _TBLPTRU, _POSTDEC1 __endasm;                                    \
+  __asm movff _TBLPTRH, _POSTDEC1 __endasm;                                    \
+  __asm movff _TBLPTRL, _POSTDEC1 __endasm;                                    \
   __asm movff _TABLAT, _POSTDEC1 __endasm;
 
-#define LEDMTX_R0_RESTORE_TBLRD            \
-  __asm movff _PREINC1, _TABLAT __endasm;  \
-  __asm movff _PREINC1, _TBLPTRL __endasm; \
-  __asm movff _PREINC1, _TBLPTRH __endasm; \
-  __asm movff _PREINC1, _TBLPTRU __endasm; \
-  __asm movff _PREINC1, _EECON1 __endasm;
+#define LEDMTX_R0_RESTORE_TBLRD                                                \
+  __asm movff _PREINC1, _TABLAT __endasm;                                      \
+  __asm movff _PREINC1, _TBLPTRL __endasm;                                     \
+  __asm movff _PREINC1, _TBLPTRH __endasm;                                     \
+  __asm movff _PREINC1, _TBLPTRU __endasm;                                     \
+  __LEDMTX_POP_EECON1
 
 #endif
