@@ -19,7 +19,7 @@
 // RUN:          quit\n' | %gpsim --cli --processor=p18f452 %t.cod | FileCheck %s
 #include <ledmtx_scrollstr.h>
 #include <ledmtx_core.h>
-#include <ledmtx_font5x7.h>
+#include <ledmtx_fontstd.h>
 #include <signal.h>
 
 __CONFIG(__CONFIG1H, _HS_OSC_1H);

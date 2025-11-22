@@ -1,7 +1,7 @@
 include ../make.mk
 
 SRCDIR = ..
-OBJECTS = libledmtx_font5x7.o
+OBJECTS = libledmtx_font5x7.o libledmtx_font6x8.o
 
 all: $(OBJECTS)
 

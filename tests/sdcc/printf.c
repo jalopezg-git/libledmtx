@@ -8,7 +8,7 @@
 // RUN:          run\n dump\n \
 // RUN:          quit\n' | %gpsim --cli --processor=p18f452 %t.cod | FileCheck %s
 #include <ledmtx_core.h>
-#include <ledmtx_font5x7.h>
+#include <ledmtx_fontstd.h>
 #include <stdio.h>
 #include <signal.h>
 
