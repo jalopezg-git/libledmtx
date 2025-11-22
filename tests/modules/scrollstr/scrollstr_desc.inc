@@ -12,6 +12,7 @@ _scrollstr_desc_1	db 0x02			; counter
 			db low(_test_stub_step)	; step
 			db high(_test_stub_step)
 			db upper(_test_stub_step)
+			db 7			; height
 			db 16			; width
 			db 0			; y
 			db 0			; x
@@ -30,6 +31,7 @@ _scrollstr_desc_2	db 0x02			; counter
 			db low(_test_stub_step)	; step
 			db high(_test_stub_step)
 			db upper(_test_stub_step)
+			db 7			; height
 			db 16			; width
 			db 0			; y
 			db 16			; x

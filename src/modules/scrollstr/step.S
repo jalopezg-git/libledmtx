@@ -49,7 +49,7 @@ _ledmtx_scrollstr_step:
   incf		FSR2H, f, A
 
 ;; Call `ledmtx_scroll_l()`
-  movff		_ledmtx_font_sz_h, POSTDEC1
+  movff		POSTINC2, POSTDEC1
   movff		POSTINC2, POSTDEC1
   movff		POSTINC2, POSTDEC1
   movff		POSTINC2, POSTDEC1

@@ -104,10 +104,10 @@ _main:
   movwf		r0x03, a
 ; COM: Check the `bitmap_mask` member on both descriptors
   lfsr		0, _scrollstr_desc_1
-  movlw		16
+  movlw		17
   movff		PLUSW0,	PRODH	; bitmap_mask
   lfsr		0, _scrollstr_desc_2
-  movlw		16
+  movlw		17
   movff		PLUSW0,	PRODL	; bitmap_mask
   bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`
 
