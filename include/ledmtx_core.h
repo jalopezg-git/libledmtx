@@ -56,9 +56,12 @@ extern char ledmtx_config_t0con;
   #define LEDMTX_R0_RESTORE_TBLRD
 #endif
 
-/// Declare a framebuffer of size `size` (in bytes)
 #define LEDMTX_FRAMEBUFFER_RES(size) \
   unsigned char ledmtx_framebuffer[size];
+/// Declare a framebuffer of the given `_width` and `_height` (in pixels), which
+/// must be constant expressions.
+#define LEDMTX_DECLARE_FRAMEBUFFER(_width, _height)		\
+  LEDMTX_FRAMEBUFFER_RES(((_width + 7) / 8) * _height)
 
 /// Declare `_name` as backing storage for the backbuffer.  Typically, this is
 /// combined with a call to `ledmtx_setbackbuffer(_name)` somewhere else.
