@@ -55,7 +55,7 @@ _ledmtx_scrollstr_start:
   movff		PLUSW1, FSR0H			; FSR0 = desc
   movlw		2
   movff		PLUSW1, FSR0L
-  movlw		16				; *(FRS0 + 16) = WREG
+  movlw		17				; *(FRS0 + 17) = WREG
   movff		PREINC1, PLUSW0
 
   movf		INDF1, w, A			; _ledmtx_scrollstr_bitmap |= WREG

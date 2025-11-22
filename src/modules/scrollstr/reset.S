@@ -37,7 +37,7 @@ _ledmtx_scrollstr_reset:
   movlw		1		; counter = timeout
   movff		PLUSW0, INDF0
 
-  movlw		10
+  movlw		11
   addwf		FSR0L, f, A
   btfsc		STATUS, C, A
   incf		FSR0H, f, A

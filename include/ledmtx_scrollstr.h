@@ -32,6 +32,7 @@ struct ledmtx_scrollstr_desc {
   unsigned char counter;
   unsigned char timeout;        ///< Interval between steps
   __far void (*step)(__data struct ledmtx_scrollstr_desc *);   ///< The step function
+  unsigned char h;              ///< Height of the region; usually just `ledmtx_font_sz_h`
   unsigned char w;              ///< Width of the region
   unsigned char y;              ///< The (y) coordinate of the region
   unsigned char x;              ///< The (x) coordinate of the region
@@ -45,10 +46,11 @@ struct ledmtx_scrollstr_desc {
 
 // FIXME: this should probably be turned into a function instead.
 /// Helper to initialize a `struct ledmtx_scrollstr_desc`
-#define LEDMTX_SCROLLSTR_SET(desc, _timeout, _x, _y, _w, _str, _step, _end) \
+#define LEDMTX_SCROLLSTR_SET(desc, _timeout, _x, _y, _w, _h, _str, _step, _end) \
 do {                                                                        \
   (desc).counter = (desc).timeout = _timeout;                               \
   (desc).step = _step;                                                      \
+  (desc).h = _h;                                                            \
   (desc).w = _w;                                                            \
   (desc).y = _y;                                                            \
   (desc).x = _x;                                                            \

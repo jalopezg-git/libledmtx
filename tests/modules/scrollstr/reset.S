@@ -51,11 +51,11 @@ _main:
   lfsr		0, _scrollstr_desc_1
   movlw		0
   movff		r0x00, PLUSW0	; counter
-  movlw		10
-  movff		r0x00, PLUSW0	; i
   movlw		11
-  movff		r0x00, PLUSW0	; charoff
+  movff		r0x00, PLUSW0	; i
   movlw		12
+  movff		r0x00, PLUSW0	; charoff
+  movlw		13
   movff		r0x00, PLUSW0	; mask
 
   movlw		high(_scrollstr_desc_1)
@@ -73,11 +73,11 @@ _main:
   lfsr		0, _scrollstr_desc_1
   movlw		0
   movff		PLUSW0, r0x00	; counter
-  movlw		10
-  movff		PLUSW0, r0x01	; i
   movlw		11
-  movff		PLUSW0, r0x02	; charoff
+  movff		PLUSW0, r0x01	; i
   movlw		12
+  movff		PLUSW0, r0x02	; charoff
+  movlw		13
   movff		PLUSW0, r0x03	; mask
 
   bcf		RCON, PD, a	; hits breakpoint set by `break w (rcon & 0x04) = 0x00`

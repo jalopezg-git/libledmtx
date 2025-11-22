@@ -36,11 +36,11 @@ _ledmtx_scrollstr_stop:
   movlw		2
   movff		PLUSW1, FSR0H
 
-  movlw		16				; _ledmtx_scrollstr_bitmap &= ~*(FSR0 + 16)
+  movlw		17			; _ledmtx_scrollstr_bitmap &= ~*(FSR0 + 17)
   movf		PLUSW0, w, A
   xorlw		0xff
   andwf		_ledmtx_scrollstr_bitmap, f, A
-  movlw		16				; *(FSR0+16) = 0
+  movlw		17				; *(FSR0+17) = 0
   clrf		PLUSW0, A
   return
 

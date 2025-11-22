@@ -47,7 +47,7 @@ void main(void) {
               LEDMTX__DEFAULT_TMR0L, LEDMTX__DEFAULT_T0CON);
   ledmtx_setfont(ledmtx_font5x7);
 
-  LEDMTX_SCROLLSTR_SET(s0, 2, 0, 0, 32, (__data char *)str,
+  LEDMTX_SCROLLSTR_SET(s0, 2, 0, 0, 32, ledmtx_font_sz_h, (__data char *)str,
                        ledmtx_scrollstr_step, ledmtx_scrollstr_reset);
   ledmtx_scrollstr_start(&s0);
 }
