@@ -1,5 +1,5 @@
 #include <ledmtx_core.h>
-#include <ledmtx_font5x7.h>
+#include <ledmtx_fontstd.h>
 #include <signal.h>
 #include <stdio.h>
 

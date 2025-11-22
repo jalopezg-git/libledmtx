@@ -1,7 +1,7 @@
 /*
- * ledmtx_font5x7.h - 128 char (7 bit) 5x7 font header
+ * ledmtx_fontstd.h - 128 char (7 bit) standard fonts header
  *
- * Copyright (C) 2011, 2023  Javier Lopez-Gomez
+ * Copyright (C) 2011, 2025  Javier Lopez-Gomez
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as published by
@@ -18,9 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-#ifndef __LEDMTX_FONT5X7_H__
-#define __LEDMTX_FONT5X7_H__
+#ifndef __LEDMTX_FONTSTD_H__
+#define __LEDMTX_FONTSTD_H__
 
 extern void ledmtx_font5x7(void);
+extern void ledmtx_font6x8(void);
 
 #endif
