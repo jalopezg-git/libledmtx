@@ -30,12 +30,21 @@
   extern _ledmtx_config_height
 
   global _ledmtx_driver_row
+;; If experimental soft-PWM is enabled, `_ledmtx_r393c164_spwm_duty` is exposed
+;; as a means to manually control display brightness.
+#ifdef LEDMTX_R393C164_SOFTPWM
+  global _ledmtx_r393c164_spwm_duty
+#endif
   global _ledmtx_driver_init
   global _ledmtx_driver_viewport_changed
   global _ledmtx_driver_vertrefresh
 
 .udata_acs_ledmtx_driver	udata_acs
 _ledmtx_driver_row	res	1
+#ifdef LEDMTX_R393C164_SOFTPWM
+_ledmtx_r393c164_spwm_step	res	1
+_ledmtx_r393c164_spwm_duty	res	1
+#endif
 
 ;; Output the 1's complement of `register<bit>` to the LEDMTX_R393C164_CDAT pin,
 ;; after which the LEDMTX_R393C164_CCLK pin is pulsed.
@@ -49,6 +58,10 @@ OUTBIT	macro	register, bit
   code
 _ledmtx_driver_init:
   clrf _ledmtx_driver_row, A
+#ifdef LEDMTX_R393C164_SOFTPWM
+  clrf _ledmtx_r393c164_spwm_step, A
+  setf _ledmtx_r393c164_spwm_duty, A
+#endif
   return
 
 ;; The viewport has changed; reset `_ledmtx_driver_row` only if needed.
@@ -71,6 +84,11 @@ _ledmtx_driver_vertrefresh:
 
   movf		_ledmtx_driver_row, w, A
   bz		@vertrefresh_rrst		; if (_ledmtx_driver_row == 0)
+#ifdef LEDMTX_R393C164_SOFTPWM
+  movf		_ledmtx_r393c164_spwm_duty, w, A
+  cpfslt	_ledmtx_r393c164_spwm_step, A
+  bra		@vertrefresh_out
+#endif
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	;        _
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RCLK, A	; RCLK _| |_
 
@@ -90,7 +108,7 @@ _ledmtx_driver_vertrefresh:
 
 ;; Re-enable row selection
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RENA, A
-
+@vertrefresh_out:
   incf		_ledmtx_driver_row, f, A	; _ledmtx_driver_row++
   movf		_ledmtx_viewport_height, w, A
   cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row >= _ledmtx_viewport_height)
@@ -98,6 +116,12 @@ _ledmtx_driver_vertrefresh:
   return
 
 @vertrefresh_rrst:
+#ifdef LEDMTX_R393C164_SOFTPWM
+  incf		_ledmtx_r393c164_spwm_step, f, A	; _ledmtx_r393c164_spwm_step++
+  movlw		LEDMTX_R393C164_SOFTPWM_N_STEPS
+  cpfslt	_ledmtx_r393c164_spwm_step, A
+  clrf		_ledmtx_r393c164_spwm_step, A
+#endif
   bsf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	        _
   bcf		LEDMTX_R393C164_IOPORT, LEDMTX_R393C164_RRST, A	;	 RRST _| |_
   bra		@vertrefresh_loop_prologue
