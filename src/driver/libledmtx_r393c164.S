@@ -1,7 +1,7 @@
 ;
 ; libledmtx_r393c164.S - libledmtx 'r393c164' display hardware driver
 ;
-; Copyright (C) 2011, 2023  Javier Lopez-Gomez
+; Copyright (C) 2011-2025  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -31,6 +31,7 @@
 
   global _ledmtx_driver_row
   global _ledmtx_driver_init
+  global _ledmtx_driver_viewport_changed
   global _ledmtx_driver_vertrefresh
 
 .udata_acs_ledmtx_driver	udata_acs
@@ -48,6 +49,13 @@ OUTBIT	macro	register, bit
   code
 _ledmtx_driver_init:
   clrf _ledmtx_driver_row, A
+  return
+
+;; The viewport has changed; reset `_ledmtx_driver_row` only if needed.
+_ledmtx_driver_viewport_changed:
+  movf		_ledmtx_viewport_height, w, A
+  cpfslt	_ledmtx_driver_row, A
+  clrf		_ledmtx_driver_row, A
   return
 
 ;; The display is multiplexed, i.e., only one row is driven at a time.
@@ -85,7 +93,7 @@ _ledmtx_driver_vertrefresh:
 
   incf		_ledmtx_driver_row, f, A	; _ledmtx_driver_row++
   movf		_ledmtx_viewport_height, w, A
-  cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row == _ledmtx_viewport_height)
+  cpfslt	_ledmtx_driver_row, A		; if (_ledmtx_driver_row >= _ledmtx_viewport_height)
   clrf		_ledmtx_driver_row, A		; 	_ledmtx_driver_row = 0
   return
 

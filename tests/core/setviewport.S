@@ -22,6 +22,7 @@
 
   global _ledmtx_framebuffer
   global _ledmtx_driver_init
+  global _ledmtx_driver_viewport_changed
   global _main
   global _stack_end
 
@@ -33,6 +34,9 @@ _ledmtx_framebuffer	res 28	; unused, but required to link
 
   code
 _ledmtx_driver_init:
+  return
+
+_ledmtx_driver_viewport_changed:
   return
 
 ;; void test_inval(void)

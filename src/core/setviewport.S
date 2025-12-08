@@ -31,7 +31,7 @@
   extern _ledmtx_viewport_xoff
   extern _ledmtx_viewport_stride
 
-  extern _ledmtx_driver_init
+  extern _ledmtx_driver_viewport_changed
 
   global _ledmtx_setviewport
 
@@ -77,7 +77,7 @@ _ledmtx_setviewport:
   andlw		0x1f
   movwf		_ledmtx_viewport_stride, A
 
-  call		_ledmtx_driver_init
+  call		_ledmtx_driver_viewport_changed
   bsf		INTCON, GIE, A
   retlw		1
 @invalid_value:
