@@ -1,7 +1,7 @@
 ;
 ; libledmtx_r393c164.S - libledmtx 'r393c164' display hardware driver
 ;
-; Copyright (C) 2011-2025  Javier Lopez-Gomez
+; Copyright (C) 2011-2026  Javier Lopez-Gomez
 ;
 ; This program is free software; you can redistribute it and/or modify
 ; it under the terms of the GNU Library General Public License as published by
@@ -32,6 +32,9 @@
   global _ledmtx_driver_row
   global _ledmtx_driver_init
   global _ledmtx_driver_viewport_changed
+#ifdef LEDMTX_R393C164_E_SOFTPWM
+  global ___ledmtx_r393c164_E_softpwm_duty_end
+#endif
   global _ledmtx_driver_vertrefresh
 
 .udata_acs_ledmtx_driver	udata_acs
@@ -58,10 +61,18 @@ _ledmtx_driver_viewport_changed:
   clrf		_ledmtx_driver_row, A
   return
 
+#ifdef LEDMTX_R393C164_E_SOFTPWM
+___ledmtx_r393c164_E_softpwm_duty_end:
+  LEDMTX_R393C164_E_SOFTPWM_DUTY_END
+#endif
+
 ;; The display is multiplexed, i.e., only one row is driven at a time.
 ;; Shift out the (negated) value of all bits in the selected row and advance to
 ;; the next row.  This is usually called as part of a timer ISR.
 _ledmtx_driver_vertrefresh:
+#ifdef LEDMTX_R393C164_E_SOFTPWM
+  LEDMTX_R393C164_E_SOFTPWM_DUTY_BEGIN
+#endif
 ;; Compute the framebuffer address of the start of the next row
   LOAD_BUFADDR_IN_FSR0	_ledmtx_frontbuffer	; FSR0 = _ledmtx_frontbuffer
   AT_END_OF_VIEWPORT_ROW	_ledmtx_driver_row
