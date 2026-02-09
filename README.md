@@ -1,12 +1,12 @@
 # libledmtx: a library to drive LED dot-matrix displays written in PIC18 assembler
 
+![libledmtx](doc/libledmtx-720.png)
+
 ## Introduction
 The libledmtx project was developed as a subproject of [p18clock](https://github.com/jalopezg-git/p18clock).
 The library is completely written in PIC18 assembler and follows the call convention of the [SDCC](http://sdcc.sourceforge.net/) pic16 port.
 Exported routines are meant to be called in by C code.
 If you intend to issue calls from assembler, make sure that you follow the [pic16 port](http://sdcc.sourceforge.net/doc/sdccman.pdf) call convention.
-
-![libledmtx driving a LED display](doc/demo.jpg)
 
 ## Building libledmtx
 Before compiling the library make sure you have this installed:
